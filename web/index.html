@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matrix Rain</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #000;
+            overflow: hidden;
+        }
+        canvas {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="matrixCanvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('matrixCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let width = canvas.width = window.innerWidth;
+        let height = canvas.height = window.innerHeight;
+
+        const katakana = 'アァカサタナハマヤャラワガザダバパイィキシチニヒミリヰギジヂビピウゥクスツヌフムユュルグズブヅプエェケセテネヘメレヱゲゼデベペオォコソトノホモヨョロヲゴゾドボポヴッン';
+        const latin = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        const nums = '0123456789';
+        const alphabet = katakana + latin + nums;
+
+        const fontSize = 16;
+        let columns = width / fontSize;
+
+        let drops = [];
+        // x below is the x coordinate
+        // 1 = y co-ordinate of the drop(same for every drop initially)
+        for (let x = 0; x < columns; x++) {
+            drops[x] = 1;
+        }
+
+        const draw = () => {
+            // Black BG for the canvas
+            // translucent BG to show trail
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, width, height);
+
+            ctx.fillStyle = '#0F0'; // Green text
+            ctx.font = fontSize + 'px monospace';
+
+            // looping over drops
+            for (let i = 0; i < drops.length; i++) {
+                // a random chinese character to print
+                const text = alphabet.charAt(Math.floor(Math.random() * alphabet.length));
+                // x = i*fontSize, y = value of drops[i]*fontSize
+                ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+
+                // sending the drop back to the top randomly after it has crossed the screen
+                // adding a randomness to the reset to make the drops scattered on the Y axis
+                if (drops[i] * fontSize > height && Math.random() > 0.975) {
+                    drops[i] = 0;
+                }
+
+                // incrementing Y coordinate
+                drops[i]++;
+            }
+        };
+
+        // Loop the animation
+        setInterval(draw, 33);
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            width = canvas.width = window.innerWidth;
+            height = canvas.height = window.innerHeight;
+
+            // Recalculate columns
+            const newColumns = Math.floor(width / fontSize);
+
+            // If the window got wider, add more drops
+            if (newColumns > columns) {
+                for (let x = columns; x < newColumns; x++) {
+                    drops[x] = Math.floor(Math.random() * (height / fontSize));
+                }
+            } else if (newColumns < columns) {
+                drops = drops.slice(0, newColumns);
+            }
+            columns = newColumns;
+        });
+    </script>
+</body>
+</html>
