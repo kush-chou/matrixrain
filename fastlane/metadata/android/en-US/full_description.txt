@@ -1,0 +1,17 @@
+Wake up, Neo. Bring the iconic Matrix digital code rain to your Android device with zero battery compromise.
+
+Matrix Rain is an ultra-optimized Live Wallpaper engineered specifically for AMOLED/OLED displays and high-refresh screens (60Hz, 90Hz, 120Hz).
+
+KEY FEATURES:
+• 0% Standby Battery Drain: Halts rendering completely when your screen is turned off or when an application is open in the foreground.
+• True OLED Black: Pure #000000 background keeps individual pixels turned off, saving battery while delivering infinite contrast.
+• Extreme Customization: Tweak rain speed, density, stream length, glitch frequency, and character sizes.
+• Interactive Touch Ripples: Tap and drag across your screen to send digital shockwaves through the code waterfall.
+• Special Drops: Rare Red Virus streams, Gold Neo drops, and falling custom messages.
+• Privacy First: 100% offline, zero trackers, zero analytics, zero ads.
+
+Wear OS Companion:
+Bring the digital code rain to your wrist on Google Pixel Watch and Samsung Galaxy Watch with full Watch Face Format (WFF) and low-power Always-On Display (AOD) support.
+
+Free & Open Source:
+Available on F-Droid with all features unlocked. Check out the source code at https://github.com/kush-chou/neocoderain

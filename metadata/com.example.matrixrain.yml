@@ -1,0 +1,26 @@
+Categories:
+  - Personalization
+  - Theming
+License: MIT
+AuthorName: Kushagra Choudhary
+SourceCode: https://github.com/kush-chou/neocoderain
+IssueTracker: https://github.com/kush-chou/neocoderain/issues
+WebSite: https://matrixrain.app/
+
+AutoName: Matrix Rain
+
+RepoType: git
+Repo: https://github.com/kush-chou/neocoderain.git
+
+Builds:
+  - versionName: '1.0-foss'
+    versionCode: 1
+    commit: 'v1.0.0'
+    subdir: app
+    gradle:
+      - assembleFdroidRelease
+
+AutoUpdateMode: Version
+UpdateCheckMode: Tags
+CurrentVersion: '1.0-foss'
+CurrentVersionCode: 1

@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Watch Face Format (WFF) Specification for Wear OS 4 & 5+ (Pixel Watch 5) -->
+<WatchFace width="450" height="450">
+    <Metadata key="CLOCK_TYPE" value="DIGITAL" />
+    <Metadata key="PREVIEW_TIME" value="13:37:00" />
+
+    <!-- Scene Layout -->
+    <Scene backgroundColor="#000000">
+
+        <!-- Background Ambient/Interactive Matrix Rain Stream Layer -->
+        <PartDraw x="0" y="0" width="450" height="450">
+            <!-- Only active in interactive mode to protect battery & prevent OLED burn-in in ambient -->
+            <Variant mode="AMBIENT" target="alpha" value="0" />
+            <Variant mode="INTERACTIVE" target="alpha" value="255" />
+            
+            <Line startX="50" startY="20" endX="50" endY="400">
+                <Stroke color="#003311" thickness="2" />
+            </Line>
+            <Line startX="120" startY="60" endX="120" endY="380">
+                <Stroke color="#005522" thickness="2" />
+            </Line>
+            <Line startX="200" startY="10" endX="200" endY="420">
+                <Stroke color="#003311" thickness="2" />
+            </Line>
+            <Line startX="280" startY="30" endX="280" endY="410">
+                <Stroke color="#004418" thickness="2" />
+            </Line>
+            <Line startX="360" startY="50" endX="360" endY="390">
+                <Stroke color="#003311" thickness="2" />
+            </Line>
+        </PartDraw>
+
+        <!-- Top Complication Slot: Battery -->
+        <ComplicationSlot
+            slotId="1"
+            supportedTypes="RANGED_VALUE SHORT_TEXT"
+            x="175" y="45" width="100" height="40">
+            <DefaultProviderPolicy
+                defaultSystemProvider="WATCH_BATTERY"
+                defaultSystemProviderType="RANGED_VALUE" />
+            <PartText x="0" y="0" width="100" height="40">
+                <Text align="CENTER">
+                    <Font family="MONOSPACE" size="18" color="#00E5FF">
+                        <Template>%s</Template>
+                        <Parameter expression="[COMPLICATION.1.TEXT]" />
+                    </Font>
+                </Text>
+            </PartText>
+        </ComplicationSlot>
+
+        <!-- Digital Time Display (Matrix Phosphor Green) -->
+        <DigitalClock x="45" y="150" width="360" height="110">
+            <TimeText format="HH:mm" align="CENTER">
+                <Font family="MONOSPACE" size="84" weight="BOLD" color="#00FF66">
+                    <!-- In Ambient mode, dim to conserve power and prevent burn-in -->
+                    <Variant mode="AMBIENT" target="color" value="#00AA44" />
+                    <Variant mode="INTERACTIVE" target="color" value="#00FF66" />
+                </Font>
+            </TimeText>
+        </DigitalClock>
+
+        <!-- Date Display -->
+        <PartText x="75" y="260" width="300" height="30">
+            <Text align="CENTER">
+                <Font family="MONOSPACE" size="18" color="#88FFAA">
+                    <Template>%s, %s %s</Template>
+                    <Parameter expression="[DAY_OF_WEEK_S]" />
+                    <Parameter expression="[MONTH_S]" />
+                    <Parameter expression="[DAY]" />
+                </Font>
+            </Text>
+        </PartText>
+
+        <!-- Bottom Complication Slot: Heart Rate / Step Count -->
+        <ComplicationSlot
+            slotId="2"
+            supportedTypes="SHORT_TEXT RANGED_VALUE"
+            x="175" y="340" width="100" height="45">
+            <DefaultProviderPolicy
+                defaultSystemProvider="STEP_COUNT"
+                defaultSystemProviderType="SHORT_TEXT" />
+            <PartText x="0" y="0" width="100" height="45">
+                <Text align="CENTER">
+                    <Font family="MONOSPACE" size="18" color="#00FF66">
+                        <Template>%s</Template>
+                        <Parameter expression="[COMPLICATION.2.TEXT]" />
+                    </Font>
+                </Text>
+            </PartText>
+        </ComplicationSlot>
+
+    </Scene>
+</WatchFace>
