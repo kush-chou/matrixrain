@@ -25,12 +25,16 @@ assert os.path.exists('landing/privacy.html'), 'landing/privacy.html missing'
 print('✔ matrixrain.app landing assets validated successfully.')
 "
 
-# 3. Verify F-Droid & Fastlane metadata
+# 3. Verify F-Droid & Fastlane metadata and store graphics
 $PYTHON -c "
 import os
 assert os.path.exists('metadata/com.example.matrixrain.yml'), 'F-Droid metadata missing'
 assert os.path.exists('fastlane/metadata/android/en-US/full_description.txt'), 'Fastlane description missing'
-print('✔ F-Droid and Play Store metadata validated successfully.')
+assert os.path.exists('fastlane/metadata/android/en-US/images/icon.png'), 'Store 512x512 icon missing'
+assert os.path.exists('fastlane/metadata/android/en-US/images/featureGraphic.png'), 'Feature graphic missing'
+assert os.path.exists('landing/assets/og-preview.png'), 'OpenGraph image missing'
+assert os.path.exists('release.keystore'), 'Release keystore missing'
+print('✔ Store graphics, app icons, and release keystore validated successfully.')
 "
 
 echo "✔ All Matrix Rain CI verification checks passed!"

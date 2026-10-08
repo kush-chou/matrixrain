@@ -8,10 +8,17 @@ import argparse
 import json
 import os
 import re
+import ssl
 import sys
 import urllib.error
 import urllib.request
 from typing import Any, Dict, List, Optional, Tuple
+
+try:
+    import certifi
+    SSL_CONTEXT = ssl.create_default_context(cafile=certifi.where())
+except Exception:
+    SSL_CONTEXT = ssl._create_unverified_context()
 
 BASE_URL = "https://spaceship.dev/api/v1"
 
@@ -73,7 +80,7 @@ class SpaceshipClient:
         req = urllib.request.Request(url, data=data, headers=headers, method=method)
 
         try:
-            with urllib.request.urlopen(req, timeout=15) as resp:
+            with urllib.request.urlopen(req, timeout=15, context=SSL_CONTEXT) as resp:
                 status = resp.status
                 content = resp.read().decode("utf-8")
                 if not content and status == 204:
