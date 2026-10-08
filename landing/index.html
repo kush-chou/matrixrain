@@ -40,13 +40,12 @@
   <header class="navbar">
     <div class="logo-container">
       <div class="terminal-symbol">&gt;_</div>
-      <span class="logo-text">matrixrain<span class="accent">.app</span></span>
-      <span class="badge badge-pulse">v2.0</span>
+      <span class="logo-text">matrixrain</span>
     </div>
     <nav class="nav-links">
       <a href="#features">Features</a>
       <a href="#wearos">Pixel Watch</a>
-      <a href="#editions">Play vs F-Droid</a>
+      <a href="#architecture">Architecture</a>
       <a href="https://github.com/kush-chou/neocoderain" target="_blank" rel="noopener" class="nav-github">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
           <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
@@ -60,23 +59,19 @@
   <main>
     <section class="hero">
       <div class="hero-content">
-        <div class="terminal-pill">
-          <span class="blinking-dot"></span>
-          <code>SYSTEM STATUS: CODE STREAM ACTIVE</code>
-        </div>
         <h1 class="hero-title">
-          Wake Up, Neo.<br>
-          <span class="gradient-text">The Matrix Is on Your Screen.</span>
+          The rain never stops.<br>
+          <span class="gradient-text">Your battery barely notices.</span>
         </h1>
         <p class="hero-subtitle">
-          The ultimate cyberpunk live wallpaper engineered for modern Android phones and Wear OS smartwatches. Zero battery drain on standby, deep OLED true blacks, customizable glyph streams, and 100% open-source on F-Droid.
+          The iconic digital code waterfall rebuilt from scratch for 120Hz AMOLED screens and Wear OS smartwatches. True OLED black, zero standby battery drain, and 100% open source.
         </p>
 
         <!-- Download Buttons -->
         <div class="cta-group">
           <a href="https://play.google.com/store/apps/details?id=com.example.matrixrain" target="_blank" rel="noopener" class="cta-btn cta-play">
             <svg class="cta-icon" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M3.609 1.814L13.792 12 3.61 22.186c-.365-.327-.585-.806-.585-1.341V3.155c0-.535.22-1.014.584-1.341zM15.207 13.414l2.42 2.42-12.39 7.086 9.97-9.506zm0-2.828l-9.97-9.506 12.39 7.086-2.42 2.42zm1.414 1.414l4.243 2.425c.808.462.808 1.218 0 1.68l-4.243 2.425-2.122-2.121 2.122-2.122z"/>
+              <path d="M3.5 2.3c-.2.3-.3.8-.3 1.4v16.6c0 .6.1 1.1.3 1.4l9.3-9.7L3.5 2.3zm12.3 8.3l-2.6 1.4 2.6 1.4 3.4-1.9c.8-.5.8-1.4 0-1.9l-3.4-1.9zm-1.8-1l-7.7-7.7c.3-.2.8-.2 1.3 0l8.7 5-2.3 2.7zm0 4.8l2.3 2.7-8.7 5c-.5.2-1 .2-1.3 0l7.7-7.7z"/>
             </svg>
             <div class="btn-text">
               <span class="small-text">GET IT ON</span>
@@ -238,74 +233,37 @@
       </div>
     </section>
 
-    <!-- Editions: Play Store vs F-Droid Comparison -->
-    <section id="editions" class="section">
+    <!-- Architecture & Performance Section -->
+    <section id="architecture" class="section">
       <div class="section-header">
-        <h2 class="section-title">Distribution & Pricing</h2>
-        <p class="section-subtitle">Pick the flavor that fits your ecosystem.</p>
+        <h2 class="section-title">Built for Performance Purists</h2>
+        <p class="section-subtitle">Zero compromise on battery runtime, smoothness, or privacy.</p>
       </div>
 
-      <div class="pricing-table glass-card">
-        <table>
-          <thead>
-            <tr>
-              <th>Feature</th>
-              <th>Google Play (Free)</th>
-              <th>Google Play (Pro $2.99)</th>
-              <th class="highlight-col">F-Droid (FOSS)</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Classic Matrix Green Theme</td>
-              <td><span class="check">✓</span> Included</td>
-              <td><span class="check">✓</span> Included</td>
-              <td class="highlight-col"><span class="check">✓</span> Included</td>
-            </tr>
-            <tr>
-              <td>Katakana & Latin Glyphs</td>
-              <td><span class="check">✓</span> Included</td>
-              <td><span class="check">✓</span> Included</td>
-              <td class="highlight-col"><span class="check">✓</span> Included</td>
-            </tr>
-            <tr>
-              <td>True OLED Black Mode</td>
-              <td><span class="check">✓</span> Included</td>
-              <td><span class="check">✓</span> Included</td>
-              <td class="highlight-col"><span class="check">✓</span> Included</td>
-            </tr>
-            <tr>
-              <td>Custom Color Palettes (Cyberpunk, Crimson, Amber)</td>
-              <td><span class="cross">✕</span> Locked</td>
-              <td><span class="check">✓</span> Unlocked</td>
-              <td class="highlight-col"><span class="check">✓</span> Unlocked</td>
-            </tr>
-            <tr>
-              <td>Custom Falling Text Injection</td>
-              <td><span class="cross">✕</span> Locked</td>
-              <td><span class="check">✓</span> Unlocked</td>
-              <td class="highlight-col"><span class="check">✓</span> Unlocked</td>
-            </tr>
-            <tr>
-              <td>Touch Ripple Shockwave Engine</td>
-              <td><span class="cross">✕</span> Locked</td>
-              <td><span class="check">✓</span> Unlocked</td>
-              <td class="highlight-col"><span class="check">✓</span> Unlocked</td>
-            </tr>
-            <tr>
-              <td>Pixel Watch 5 / Wear OS Watch Face</td>
-              <td><span class="cross">✕</span> Separate</td>
-              <td><span class="check">✓</span> Included</td>
-              <td class="highlight-col"><span class="check">✓</span> Included</td>
-            </tr>
-            <tr>
-              <td>Proprietary Tracking / Analytics</td>
-              <td><span class="cross">✕</span> None</td>
-              <td><span class="cross">✕</span> None</td>
-              <td class="highlight-col"><span class="check">✓</span> Zero (100% FOSS)</td>
-            </tr>
-          </tbody>
-        </table>
+      <div class="feature-grid">
+        <div class="feature-card glass-card">
+          <div class="feature-stat">0%</div>
+          <h3>Standby Battery Drain</h3>
+          <p>Rendering is hard-halted the microsecond your display sleeps or an app opens in the foreground. No rogue background wakelocks, no idle CPU cycles.</p>
+        </div>
+
+        <div class="feature-card glass-card">
+          <div class="feature-stat">#000</div>
+          <h3>True OLED Black Depth</h3>
+          <p>Built with pure <code>#000000</code> pixel grounding. Individual AMOLED pixels remain unpowered across the infinite black backdrop, maximizing battery while delivering boundless contrast.</p>
+        </div>
+
+        <div class="feature-card glass-card">
+          <div class="feature-stat">120<span class="stat-unit">Hz</span></div>
+          <h3>ProMotion High Refresh</h3>
+          <p>Hardware-synchronized dynamic phosphor trailing timed precisely to 60Hz, 90Hz, and 120Hz display refresh intervals with zero micro-stuttering.</p>
+        </div>
+
+        <div class="feature-card glass-card">
+          <div class="feature-stat">WFF</div>
+          <h3>Wear OS 5 Native Standard</h3>
+          <p>Declarative Watch Face Format built directly for Google Pixel Watch 5 and Galaxy Watch with sub-10% OPR ambient burn-in protection.</p>
+        </div>
       </div>
     </section>
 
@@ -316,18 +274,27 @@
         <p>Choose your download channel below or build from source on GitHub.</p>
         <div class="cta-group">
           <a href="https://play.google.com/store/apps/details?id=com.example.matrixrain" target="_blank" rel="noopener" class="cta-btn cta-play">
+            <svg class="cta-icon" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M3.5 2.3c-.2.3-.3.8-.3 1.4v16.6c0 .6.1 1.1.3 1.4l9.3-9.7L3.5 2.3zm12.3 8.3l-2.6 1.4 2.6 1.4 3.4-1.9c.8-.5.8-1.4 0-1.9l-3.4-1.9zm-1.8-1l-7.7-7.7c.3-.2.8-.2 1.3 0l8.7 5-2.3 2.7zm0 4.8l2.3 2.7-8.7 5c-.5.2-1 .2-1.3 0l7.7-7.7z"/>
+            </svg>
             <div class="btn-text">
               <span class="small-text">GET IT ON</span>
               <span class="large-text">Google Play</span>
             </div>
           </a>
           <a href="https://f-droid.org/packages/com.example.matrixrain/" target="_blank" rel="noopener" class="cta-btn cta-fdroid">
+            <svg class="cta-icon" viewBox="0 0 24 24" fill="currentColor">
+              <path d="M7.4 3.7c-.4 0-.8.4-.8.8v1.6H5.2c-.8 0-1.5.7-1.5 1.5v6.9c0 .8.7 1.5 1.5 1.5h1.4v1.6c0 .4.4.8.8.8h1.6c.4 0 .8-.4.8-.8v-1.6h5.2v1.6c0 .4.4.8.8.8h1.6c.4 0 .8-.4.8-.8V16h1.4c.8 0 1.5-.7 1.5-1.5V7.6c0-.8-.7-1.5-1.5-1.5h-1.4V4.5c0-.4-.4-.8-.8-.8H16.6c-.4 0-.8.4-.8.8v1.6H9.8V4.5c0-.4-.4-.8-.8-.8H7.4zm1.2 5.5a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4zm6.8 0a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4z"/>
+            </svg>
             <div class="btn-text">
               <span class="small-text">DOWNLOAD FROM</span>
-              <span class="large-text">F-Droid FOSS</span>
+              <span class="large-text">F-Droid (FOSS)</span>
             </div>
           </a>
           <a href="https://github.com/kush-chou/neocoderain" target="_blank" rel="noopener" class="cta-btn cta-apk">
+            <svg class="cta-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/>
+            </svg>
             <div class="btn-text">
               <span class="small-text">SOURCE CODE</span>
               <span class="large-text">GitHub Repository</span>
@@ -342,7 +309,7 @@
   <footer class="footer">
     <div class="footer-container">
       <div class="footer-brand">
-        <span class="logo-text">matrixrain<span class="accent">.app</span></span>
+        <span class="logo-text">matrixrain</span>
         <p>Built for cyberpunk purists, hackers, and OLED lovers.</p>
       </div>
       <div class="footer-links">
