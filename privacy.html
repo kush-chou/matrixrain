@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Privacy Policy — Matrix Rain Live Wallpaper</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .privacy-container {
+      max-width: 800px;
+      margin: 4rem auto;
+      padding: 2.5rem;
+      line-height: 1.7;
+    }
+    .privacy-container h1 {
+      font-size: 2.2rem;
+      margin-bottom: 1rem;
+      color: var(--matrix-green);
+    }
+    .privacy-container h2 {
+      font-size: 1.4rem;
+      margin-top: 2rem;
+      margin-bottom: 0.5rem;
+      color: #fff;
+    }
+    .privacy-container p, .privacy-container li {
+      color: var(--text-muted);
+      margin-bottom: 1rem;
+    }
+    .privacy-container ul {
+      padding-left: 1.5rem;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="matrix-canvas"></canvas>
+  <div class="canvas-scanline"></div>
+  <div class="canvas-vignette"></div>
+
+  <header class="navbar">
+    <div class="logo-container">
+      <a href="index.html" style="text-decoration: none; color: inherit; display: flex; align-items: center; gap: 0.6rem;">
+        <div class="terminal-symbol">&gt;_</div>
+        <span class="logo-text">matrixrain<span class="accent">.app</span></span>
+      </a>
+    </div>
+    <nav class="nav-links">
+      <a href="index.html">← Back to App</a>
+    </nav>
+  </header>
+
+  <main class="privacy-container glass-card">
+    <h1>Privacy Policy</h1>
+    <p>Last updated: October 2026</p>
+
+    <h2>1. Overview</h2>
+    <p>
+      The <strong>Matrix Rain</strong> (NeoCodeRain) application and companion Wear OS watch face respect and protect your privacy. This policy outlines our complete lack of data collection and our privacy-first design principles.
+    </p>
+
+    <h2>2. Data Collection and Usage</h2>
+    <p>
+      <strong>Matrix Rain does not collect, store, transmit, or share any personal data or usage analytics.</strong>
+    </p>
+    <ul>
+      <li><strong>No Analytics:</strong> We do not use Google Analytics, Firebase Analytics, Sentry, Mixpanel, or any third-party tracking SDKs.</li>
+      <li><strong>No Ads:</strong> We do not serve advertising or integrate any advertising networks.</li>
+      <li><strong>No Internet Permission (F-Droid):</strong> The F-Droid / FOSS build does not request the <code>android.permission.INTERNET</code> permission.</li>
+      <li><strong>Google Play Billing (Play Store Flavor only):</strong> In the Google Play edition, in-app purchases are processed solely by Google Play Services under Google's standard Privacy Policy. We do not store your financial or payment details.</li>
+    </ul>
+
+    <h2>3. Permissions</h2>
+    <p>
+      Matrix Rain operates as an Android Live Wallpaper service (<code>android.service.wallpaper.WallpaperService</code>) and Wear OS Watch Face. It requires only the standard permissions strictly necessary to display graphics on your home screen or watch face.
+    </p>
+
+    <h2>4. Open Source Transparency</h2>
+    <p>
+      The complete source code for Matrix Rain is available for public audit and verification at:
+      <br>
+      <a href="https://github.com/kush-chou/neocoderain" target="_blank" rel="noopener" style="color: var(--matrix-green);">https://github.com/kush-chou/neocoderain</a>
+    </p>
+
+    <h2>5. Contact</h2>
+    <p>
+      If you have questions regarding this Privacy Policy, please open an issue on the GitHub repository or contact the project maintainer.
+    </p>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
