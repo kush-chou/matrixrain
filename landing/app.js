@@ -1,468 +1,347 @@
 /**
- * Matrix Rain High-Legibility Canvas Engine & Interactive Simulator
+ * matrixrain — Pure Minimalist Living Rain Engine
  * 
- * Key Architectural Fixes for Razor-Sharp Legibility:
- * 1. Full Canvas Clear every frame (#000000): Eliminates fractional subpixel
- *    smudging and motion blur that previously turned characters into green smears.
- * 2. Proper Cell Grid Geometry: Column width (1.5x) and Row height (1.45x)
- *    prevent characters from vertically colliding or horizontally crowding.
- * 3. Centered Baseline Alignment: `textAlign = 'center'` & `textBaseline = 'middle'`
- *    places each Katakana glyph squarely within its cell.
- * 4. Calculated Phosphor Alpha Decay: Crisp per-character opacity calculation
- *    with white phosphor lead head and smooth decay into true OLED black.
+ * Discrete Grid Tiling & Razor-Sharp Glyphs:
+ * - Full canvas wipe (#000000) every frame prevents ghost trails and blur.
+ * - Monospace half-width Katakana + digits are locked to integer grid cells.
+ * - Zero vertical overlap, zero horizontal crowding.
+ * - Auto-hiding HUD for an uninterrupted zen screensaver experience.
  */
 
-// Authentic Japanese Half-width Katakana + Clean Digits + Matrix Runes
-const KATAKANA_GLYPHS = [
-  'ｦ','ｧ','ｨ','ｩ','ｪ','ｫ','ｬ','ｭ','ｮ','ｯ','ｰ','ｱ','ｲ','ｳ','ｴ','ｵ','ｶ','ｷ','ｸ','ｹ','ｺ',
-  'ｻ','ｼ','ｽ','ｾ','ｿ','ﾀ','ﾁ','ﾂ','ﾃ','ﾄ','ﾅ','ﾆ','ﾇ','ﾈ','ﾉ','ﾊ','ﾋ','ﾌ','ﾍ','ﾎ','ﾏ',
-  'ﾐ','ﾑ','ﾒ','ﾓ','ﾔ','ﾕ','ﾖ','ﾗ','ﾘ','ﾙ','ﾚ','ﾛ','ﾜ','ﾝ',
-  '0','1','2','3','4','5','7','8','9',
-  '+','-','*','=','<','>',':','•'
-];
+// Authentic Half-Width Katakana, Clean Digits & Matrix Runes
+const KATAKANA = 'ｧｱｨｲｩｳｪｴｫｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾖﾗﾘﾙﾚﾛﾜｦﾝ';
+const DIGITS = '0123456789';
+const SYMBOLS = ':・=*+-<>¦|~';
+const GLYPHS = (KATAKANA + DIGITS + SYMBOLS).split('');
 
-const BINARY_GLYPHS = ['0', '1'];
-const HEX_GLYPHS = '0123456789ABCDEF'.split('');
-const ASCII_GLYPHS = 'ABCDEFGHJKLMNPQRSTUVWXYZ0123456789$#%&*+-/<>='.split('');
-const CYBER_GLYPHS = ['$', '%', '#', '@', '<', '>', '*', '+', '=', '~', '!', '?', '0', '1', 'X', 'Z'];
-
-// Theme Palette Definitions with RGB components for exact opacity rendering
+// Themes Palette
 const THEMES = {
   classic: {
-    name: 'Classic 1999 Green',
-    leadColor: '#FFFFFF',
-    glowColor: 'rgba(0, 255, 102, 0.95)',
-    headRgb: [120, 255, 170],
+    name: 'Classic Green',
+    headColor: '#FFFFFF',
+    glowColor: 'rgba(0, 255, 102, 0.85)',
+    leadRgb: [255, 255, 255],
+    neckRgb: [120, 255, 170],
     bodyRgb: [0, 255, 102],
-    tailRgb: [0, 150, 60]
+    tailRgb: [0, 140, 50]
   },
   cyan: {
     name: 'Trinity Cyan',
-    leadColor: '#FFFFFF',
-    glowColor: 'rgba(0, 229, 255, 0.95)',
-    headRgb: [160, 245, 255],
+    headColor: '#FFFFFF',
+    glowColor: 'rgba(0, 229, 255, 0.85)',
+    leadRgb: [255, 255, 255],
+    neckRgb: [160, 245, 255],
     bodyRgb: [0, 229, 255],
-    tailRgb: [0, 140, 180]
+    tailRgb: [0, 130, 170]
   },
   crimson: {
-    name: 'Agent Smith Red',
-    leadColor: '#FFFFFF',
-    glowColor: 'rgba(255, 51, 68, 0.95)',
-    headRgb: [255, 160, 170],
+    name: 'Matrix Red',
+    headColor: '#FFFFFF',
+    glowColor: 'rgba(255, 51, 68, 0.85)',
+    leadRgb: [255, 255, 255],
+    neckRgb: [255, 160, 170],
     bodyRgb: [255, 51, 68],
-    tailRgb: [170, 30, 42]
+    tailRgb: [160, 20, 35]
   },
   amber: {
     name: 'Zion Amber',
-    leadColor: '#FFFFFF',
-    glowColor: 'rgba(255, 183, 0, 0.95)',
-    headRgb: [255, 230, 160],
+    headColor: '#FFFFFF',
+    glowColor: 'rgba(255, 183, 0, 0.85)',
+    leadRgb: [255, 255, 255],
+    neckRgb: [255, 230, 160],
     bodyRgb: [255, 183, 0],
-    tailRgb: [180, 120, 0]
+    tailRgb: [170, 110, 0]
   },
   violet: {
-    name: 'Cyberpunk Violet',
-    leadColor: '#FFFFFF',
-    glowColor: 'rgba(213, 0, 249, 0.95)',
-    headRgb: [245, 160, 255],
+    name: 'Cyber Violet',
+    headColor: '#FFFFFF',
+    glowColor: 'rgba(213, 0, 249, 0.85)',
+    leadRgb: [255, 255, 255],
+    neckRgb: [245, 160, 255],
     bodyRgb: [213, 0, 249],
-    tailRgb: [140, 0, 165]
+    tailRgb: [130, 0, 160]
   },
   monochrome: {
-    name: 'OLED True White',
-    leadColor: '#FFFFFF',
-    glowColor: 'rgba(255, 255, 255, 0.85)',
-    headRgb: [240, 240, 240],
+    name: 'Monochrome White',
+    headColor: '#FFFFFF',
+    glowColor: 'rgba(255, 255, 255, 0.75)',
+    leadRgb: [255, 255, 255],
+    neckRgb: [230, 230, 230],
     bodyRgb: [180, 180, 180],
-    tailRgb: [100, 100, 100]
+    tailRgb: [90, 90, 90]
   }
 };
 
-const CHARSETS = {
-  matrix: () => KATAKANA_GLYPHS[Math.floor(Math.random() * KATAKANA_GLYPHS.length)],
-  binary: () => BINARY_GLYPHS[Math.floor(Math.random() * BINARY_GLYPHS.length)],
-  hex: () => HEX_GLYPHS[Math.floor(Math.random() * HEX_GLYPHS.length)],
-  ascii: () => ASCII_GLYPHS[Math.floor(Math.random() * ASCII_GLYPHS.length)],
-  cyber: () => CYBER_GLYPHS[Math.floor(Math.random() * CYBER_GLYPHS.length)]
-};
+const THEME_KEYS = Object.keys(THEMES);
 
 // Simulation State
 const state = {
   theme: 'classic',
-  charset: 'matrix',
-  speedMultiplier: 1.0,
-  fontSize: 20,
-  cellWidth: 30,
-  cellHeight: 28,
+  fontSize: 18,
+  cellWidth: 22,
+  cellHeight: 24,
   columns: [],
-  bgColumns: [],
-  customInjections: [],
-  ripples: []
+  ripples: [],
+  paused: false
 };
 
 const canvas = document.getElementById('matrix-canvas');
 const ctx = canvas.getContext('2d');
 
-function initColumns() {
+function randomGlyph() {
+  return GLYPHS[Math.floor(Math.random() * GLYPHS.length)];
+}
+
+function initGrid() {
   const width = window.innerWidth;
   const height = window.innerHeight;
   const dpr = Math.min(window.devicePixelRatio || 1, 2);
 
-  canvas.width = width * dpr;
-  canvas.height = height * dpr;
+  canvas.width = Math.floor(width * dpr);
+  canvas.height = Math.floor(height * dpr);
   canvas.style.width = `${width}px`;
   canvas.style.height = `${height}px`;
-  ctx.scale(dpr, dpr);
 
-  // Compute clean cell spacing so characters have breathing room
-  state.cellWidth = Math.round(state.fontSize * 1.5);
-  state.cellHeight = Math.round(state.fontSize * 1.45);
+  ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+  // Dynamic cell geometry for legibility
+  state.fontSize = width < 768 ? 16 : 18;
+  state.cellWidth = width < 768 ? 18 : 22;
+  state.cellHeight = width < 768 ? 20 : 24;
 
   const numCols = Math.floor(width / state.cellWidth);
   const totalRows = Math.ceil(height / state.cellHeight);
   state.columns = [];
 
   for (let i = 0; i < numCols; i++) {
-    const streamLen = 12 + Math.floor(Math.random() * 20);
-    const charGen = CHARSETS[state.charset];
-
+    const streamLen = 14 + Math.floor(Math.random() * 22);
     state.columns.push({
+      x: i * state.cellWidth + (state.cellWidth / 2),
       colIndex: i,
-      x: i * state.cellWidth,
-      headRow: (Math.random() * -totalRows) - 2,
-      speed: 0.22 + Math.random() * 0.28, // controlled, legible fall speed
+      headRow: Math.floor(Math.random() * -totalRows),
+      rowProgress: 0,
+      // Fall speed in rows per second (discrete grid steps)
+      rowsPerSec: 10 + Math.random() * 16,
       length: streamLen,
-      chars: Array.from({ length: streamLen }, () => charGen()),
-      leadChar: charGen()
-    });
-  }
-
-  // Background Depth Columns (slight horizontal offset, fainter)
-  const bgCellWidth = Math.round(state.cellWidth * 1.4);
-  const numBgCols = Math.floor(width / bgCellWidth);
-  state.bgColumns = [];
-
-  for (let i = 0; i < numBgCols; i++) {
-    const streamLen = 8 + Math.floor(Math.random() * 14);
-    const charGen = CHARSETS[state.charset];
-
-    state.bgColumns.push({
-      x: (i * bgCellWidth) + (state.cellWidth * 0.5),
-      headRow: (Math.random() * -totalRows) - 2,
-      speed: 0.12 + Math.random() * 0.15,
-      length: streamLen,
-      chars: Array.from({ length: streamLen }, () => charGen())
+      chars: Array.from({ length: streamLen }, () => randomGlyph()),
+      leadChar: randomGlyph()
     });
   }
 }
 
-window.addEventListener('resize', initColumns);
-initColumns();
+window.addEventListener('resize', initGrid);
+initGrid();
 
-// Animation Loop
+// Render Loop
 let lastTime = 0;
 
-function renderMatrix(timestamp) {
+function render(timestamp) {
   if (!lastTime) lastTime = timestamp;
-  const dt = (timestamp - lastTime) / 1000;
+  const dt = Math.min((timestamp - lastTime) / 1000, 0.1);
   lastTime = timestamp;
 
-  const currentTheme = THEMES[state.theme];
-  const charGen = CHARSETS[state.charset];
-  const totalRows = Math.ceil(window.innerHeight / state.cellHeight);
+  if (!state.paused) {
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    const totalRows = Math.ceil(height / state.cellHeight);
+    const theme = THEMES[state.theme];
 
-  // 1. FULL CANVAS WIPE (PURE OLED BLACK #000000)
-  // This completely eliminates ghosting, smudging, and subpixel dragging!
-  ctx.fillStyle = '#000000';
-  ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
+    // 1. Full Canvas Clear (Pure OLED Black)
+    ctx.fillStyle = '#000000';
+    ctx.fillRect(0, 0, width, height);
 
-  // 2. Process Ripples
-  for (let r = state.ripples.length - 1; r >= 0; r--) {
-    const rip = state.ripples[r];
-    rip.radius += 280 * dt;
-    rip.alpha -= 1.1 * dt;
-
-    if (rip.alpha <= 0) {
-      state.ripples.splice(r, 1);
-      continue;
-    }
-
-    ctx.save();
-    ctx.beginPath();
-    ctx.arc(rip.x, rip.y, rip.radius, 0, Math.PI * 2);
-    ctx.strokeStyle = `rgba(0, 255, 102, ${rip.alpha * 0.45})`;
-    ctx.lineWidth = 1.5;
-    ctx.stroke();
-    ctx.restore();
-  }
-
-  // Shared font configuration for crystal-clear glyph rendering
-  ctx.font = `700 ${state.fontSize}px "SF Mono", "Courier New", Consolas, Menlo, monospace`;
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-
-  // --- Layer 1: Ambient Background Depth Columns ---
-  ctx.save();
-  const bgFontSize = Math.max(12, Math.floor(state.fontSize * 0.75));
-  ctx.font = `600 ${bgFontSize}px "SF Mono", "Courier New", Consolas, Menlo, monospace`;
-
-  for (let i = 0; i < state.bgColumns.length; i++) {
-    const col = state.bgColumns[i];
-    col.headRow += col.speed * state.speedMultiplier;
-
-    if (col.headRow - col.length > totalRows + 2) {
-      col.headRow = (Math.random() * -15) - 2;
-    }
-
-    for (let j = 0; j < col.length; j++) {
-      const row = Math.floor(col.headRow - j);
-      if (row < 0 || row > totalRows) continue;
-
-      const charY = (row * state.cellHeight) + (state.cellHeight / 2);
-      const charX = col.x + (state.cellWidth / 2);
-      const alpha = Math.max(0.04, (1.0 - (j / col.length)) * 0.28);
-
-      ctx.fillStyle = `rgba(${currentTheme.bodyRgb[0]}, ${currentTheme.bodyRgb[1]}, ${currentTheme.bodyRgb[2]}, ${alpha.toFixed(2)})`;
-      ctx.fillText(col.chars[j], charX, charY);
-    }
-  }
-  ctx.restore();
-
-  // --- Layer 2: Main Foreground Rain Columns ---
-  ctx.font = `700 ${state.fontSize}px "SF Mono", "Courier New", Consolas, Menlo, monospace`;
-
-  for (let i = 0; i < state.columns.length; i++) {
-    const col = state.columns[i];
-
-    // Speed advance
-    col.headRow += col.speed * state.speedMultiplier;
-
-    // In-place Character Mutation (Living stream shimmer)
-    if (Math.random() < 0.22) {
-      const mutateIdx = Math.floor(Math.random() * col.length);
-      col.chars[mutateIdx] = (state.customInjections.length > 0 && Math.random() < 0.2)
-        ? state.customInjections[Math.floor(Math.random() * state.customInjections.length)]
-        : charGen();
-    }
-
-    if (Math.random() < 0.3) {
-      col.leadChar = charGen();
-    }
-
-    // Ripple deflection interaction
-    for (let r = 0; r < state.ripples.length; r++) {
+    // 2. Process Ripples
+    for (let r = state.ripples.length - 1; r >= 0; r--) {
       const rip = state.ripples[r];
-      const dist = Math.abs(col.x - rip.x);
-      if (Math.abs(dist - rip.radius) < 30) {
-        col.headRow -= 0.4;
-        col.chars[0] = '⚡';
+      rip.radius += 320 * dt;
+      rip.alpha -= 1.2 * dt;
+
+      if (rip.alpha <= 0) {
+        state.ripples.splice(r, 1);
+        continue;
       }
+
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(rip.x, rip.y, rip.radius, 0, Math.PI * 2);
+      ctx.strokeStyle = `rgba(${theme.bodyRgb[0]}, ${theme.bodyRgb[1]}, ${theme.bodyRgb[2]}, ${(rip.alpha * 0.5).toFixed(2)})`;
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+      ctx.restore();
     }
 
-    // Reset when stream fully exits screen
-    if (col.headRow - col.length > totalRows + 2) {
-      col.headRow = (Math.random() * -20) - 2;
-      col.speed = 0.22 + Math.random() * 0.28;
-      col.length = 12 + Math.floor(Math.random() * 20);
-    }
+    // 3. Render Columns in Discrete Cells
+    ctx.font = `700 ${state.fontSize}px "SF Mono", "Consolas", "Menlo", "Courier New", monospace`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
 
-    const charX = col.x + (state.cellWidth / 2);
+    for (let i = 0; i < state.columns.length; i++) {
+      const col = state.columns[i];
 
-    // Draw each glyph crisply inside its grid cell
-    for (let j = 0; j < col.length; j++) {
-      const row = Math.floor(col.headRow - j);
-      if (row < 0 || row > totalRows) continue;
+      // Discrete step advance
+      col.rowProgress += col.rowsPerSec * dt;
+      if (col.rowProgress >= 1) {
+        const step = Math.floor(col.rowProgress);
+        col.rowProgress -= step;
+        col.headRow += step;
 
-      const charY = (row * state.cellHeight) + (state.cellHeight / 2);
-      const char = (j === 0) ? col.leadChar : col.chars[j];
-      const normalizedPos = j / col.length; // 0 (head) to 1 (tail)
+        // Shift characters and introduce new lead character
+        for (let s = 0; s < step; s++) {
+          col.chars.pop();
+          col.chars.unshift(col.leadChar);
+          col.leadChar = randomGlyph();
+        }
+      }
 
-      if (j === 0) {
-        // Leading Head Spark (Razor-sharp white with phosphor bloom)
-        ctx.save();
-        ctx.fillStyle = currentTheme.leadColor;
-        ctx.shadowBlur = 12;
-        ctx.shadowColor = currentTheme.glowColor;
-        ctx.fillText(char, charX, charY);
-        ctx.restore();
-      } else if (j <= 2) {
-        // Upper Neck (High brightness electric green)
-        const alpha = 0.95 - (j * 0.08);
-        ctx.fillStyle = `rgba(${currentTheme.headRgb[0]}, ${currentTheme.headRgb[1]}, ${currentTheme.headRgb[2]}, ${alpha.toFixed(2)})`;
-        ctx.fillText(char, charX, charY);
-      } else if (normalizedPos < 0.6) {
-        // Mid Stream Body (Solid readable theme color)
-        const alpha = 0.82 - ((normalizedPos - 0.15) * 0.7);
-        ctx.fillStyle = `rgba(${currentTheme.bodyRgb[0]}, ${currentTheme.bodyRgb[1]}, ${currentTheme.bodyRgb[2]}, ${alpha.toFixed(2)})`;
-        ctx.fillText(char, charX, charY);
-      } else {
-        // Lower Tail (Deep decaying phosphor fading cleanly into pure black)
-        const alpha = Math.max(0.06, (1.0 - normalizedPos) * 0.75);
-        ctx.fillStyle = `rgba(${currentTheme.tailRgb[0]}, ${currentTheme.tailRgb[1]}, ${currentTheme.tailRgb[2]}, ${alpha.toFixed(2)})`;
-        ctx.fillText(char, charX, charY);
+      // In-place mutation (living code shimmer)
+      if (Math.random() < 0.12) {
+        const mutateIndex = Math.floor(Math.random() * col.chars.length);
+        col.chars[mutateIndex] = randomGlyph();
+      }
+
+      // Check collision with ripples
+      for (let r = 0; r < state.ripples.length; r++) {
+        const rip = state.ripples[r];
+        const dist = Math.abs(col.x - rip.x);
+        if (Math.abs(dist - rip.radius) < 25) {
+          col.headRow -= 0.5;
+          col.chars[0] = '⚡';
+        }
+      }
+
+      // Reset when fully below screen
+      if (col.headRow - col.length > totalRows + 2) {
+        col.headRow = Math.floor(Math.random() * -15) - 2;
+        col.rowsPerSec = 10 + Math.random() * 16;
+        col.length = 14 + Math.floor(Math.random() * 22);
+        col.chars = Array.from({ length: col.length }, () => randomGlyph());
+      }
+
+      // Render glyphs at integer row positions
+      for (let j = 0; j < col.length; j++) {
+        const row = col.headRow - j;
+        if (row < 0 || row > totalRows) continue;
+
+        const charY = (row * state.cellHeight) + (state.cellHeight / 2);
+        const char = (j === 0) ? col.leadChar : col.chars[j];
+        const normalizedPos = j / col.length;
+
+        if (j === 0) {
+          // Leading Head Character (Pure White with crisp phosphor bloom)
+          ctx.save();
+          ctx.fillStyle = theme.headColor;
+          ctx.shadowBlur = 8;
+          ctx.shadowColor = theme.glowColor;
+          ctx.fillText(char, col.x, charY);
+          ctx.restore();
+        } else if (j <= 2) {
+          // Upper Neck (High Brightness Accent)
+          const alpha = 0.95 - (j * 0.08);
+          ctx.fillStyle = `rgba(${theme.neckRgb[0]}, ${theme.neckRgb[1]}, ${theme.neckRgb[2]}, ${alpha.toFixed(2)})`;
+          ctx.fillText(char, col.x, charY);
+        } else if (normalizedPos < 0.6) {
+          // Mid Body (Readable Theme Color)
+          const alpha = 0.80 - ((normalizedPos - 0.15) * 0.65);
+          ctx.fillStyle = `rgba(${theme.bodyRgb[0]}, ${theme.bodyRgb[1]}, ${theme.bodyRgb[2]}, ${alpha.toFixed(2)})`;
+          ctx.fillText(char, col.x, charY);
+        } else {
+          // Lower Tail (Decaying phosphor fading cleanly into pure black)
+          const alpha = Math.max(0.06, (1.0 - normalizedPos) * 0.70);
+          ctx.fillStyle = `rgba(${theme.tailRgb[0]}, ${theme.tailRgb[1]}, ${theme.tailRgb[2]}, ${alpha.toFixed(2)})`;
+          ctx.fillText(char, col.x, charY);
+        }
       }
     }
   }
 
-  requestAnimationFrame(renderMatrix);
+  requestAnimationFrame(render);
 }
-requestAnimationFrame(renderMatrix);
 
-// Pointer Radial Shockwave
-window.addEventListener('pointerdown', (e) => {
+requestAnimationFrame(render);
+
+// Interactive Radial Ripple
+function triggerRipple(x, y) {
   state.ripples.push({
-    x: e.clientX,
-    y: e.clientY,
+    x,
+    y,
     radius: 12,
     alpha: 1.0
   });
 
-  const clickCol = Math.floor(e.clientX / state.cellWidth);
+  const clickCol = Math.floor(x / state.cellWidth);
   for (let offset = -3; offset <= 3; offset++) {
     const col = state.columns[clickCol + offset];
     if (col) {
       col.headRow -= (4 - Math.abs(offset)) * 0.8;
       for (let k = 0; k < 3; k++) {
-        col.chars[k] = CHARSETS[state.charset]();
+        col.chars[k] = randomGlyph();
       }
     }
   }
+}
+
+window.addEventListener('pointerdown', (e) => {
+  // Avoid rippling when clicking HUD buttons
+  if (e.target.closest('.hud-top') || e.target.closest('.hud-bottom')) return;
+  triggerRipple(e.clientX, e.clientY);
 });
 
-// UI Controls
-document.querySelectorAll('.theme-btn').forEach((btn) => {
-  btn.addEventListener('click', () => {
-    document.querySelectorAll('.theme-btn').forEach((b) => b.classList.remove('active'));
-    btn.classList.add('active');
-    state.theme = btn.dataset.theme;
+// Zen Screensaver Auto-Hide (3.5s inactivity)
+let hideTimer = null;
+
+function resetInactivityTimer() {
+  document.body.classList.remove('hud-hidden');
+  clearTimeout(hideTimer);
+  hideTimer = setTimeout(() => {
+    document.body.classList.add('hud-hidden');
+  }, 3500);
+}
+
+['mousemove', 'mousedown', 'keydown', 'touchstart'].forEach((evt) => {
+  window.addEventListener(evt, resetInactivityTimer, { passive: true });
+});
+resetInactivityTimer();
+
+// Theme Selection
+function setTheme(themeKey) {
+  if (!THEMES[themeKey]) return;
+  state.theme = themeKey;
+  document.querySelectorAll('.theme-dot').forEach((dot) => {
+    dot.classList.toggle('active', dot.dataset.theme === themeKey);
+  });
+}
+
+document.querySelectorAll('.theme-dot').forEach((dot) => {
+  dot.addEventListener('click', () => {
+    setTheme(dot.dataset.theme);
   });
 });
 
-const charsetSelect = document.getElementById('charset-select');
-charsetSelect.addEventListener('change', (e) => {
-  state.charset = e.target.value;
-  initColumns();
-});
-
-const speedSlider = document.getElementById('speed-slider');
-const speedVal = document.getElementById('speed-val');
-speedSlider.addEventListener('input', (e) => {
-  state.speedMultiplier = parseFloat(e.target.value);
-  speedVal.textContent = `${state.speedMultiplier.toFixed(1)}x`;
-});
-
-const densitySlider = document.getElementById('density-slider');
-const densityVal = document.getElementById('density-val');
-densitySlider.addEventListener('input', (e) => {
-  state.fontSize = parseInt(e.target.value, 10);
-  if (state.fontSize <= 16) densityVal.textContent = 'High';
-  else if (state.fontSize <= 22) densityVal.textContent = 'Medium';
-  else densityVal.textContent = 'Low';
-  initColumns();
-});
-
-const customTextInput = document.getElementById('custom-text');
-customTextInput.addEventListener('keydown', (e) => {
-  if (e.key === 'Enter' && customTextInput.value.trim().length > 0) {
-    state.customInjections = customTextInput.value.trim().split('');
-    customTextInput.style.borderColor = '#ffffff';
-    setTimeout(() => {
-      customTextInput.style.borderColor = 'rgba(0, 255, 102, 0.3)';
-    }, 400);
+// Keyboard Shortcuts: [Space] Pause, [T] Cycle Theme, [F] Fullscreen
+window.addEventListener('keydown', (e) => {
+  if (e.key === ' ' || e.code === 'Space') {
+    e.preventDefault();
+    state.paused = !state.paused;
+  } else if (e.key === 't' || e.key === 'T') {
+    const currentIdx = THEME_KEYS.indexOf(state.theme);
+    const nextIdx = (currentIdx + 1) % THEME_KEYS.length;
+    setTheme(THEME_KEYS[nextIdx]);
+  } else if (e.key === 'f' || e.key === 'F') {
+    toggleFullscreen();
   }
 });
 
-// Fullscreen
+// Fullscreen Toggle
 const fullscreenBtn = document.getElementById('fullscreen-btn');
-fullscreenBtn.addEventListener('click', () => {
+function toggleFullscreen() {
   if (!document.fullscreenElement) {
     document.documentElement.requestFullscreen().catch(() => {});
-    fullscreenBtn.textContent = '✕ Exit';
+    if (fullscreenBtn) fullscreenBtn.textContent = '✕';
   } else {
     document.exitFullscreen().catch(() => {});
-    fullscreenBtn.textContent = '⛶ Fullscreen';
+    if (fullscreenBtn) fullscreenBtn.textContent = '⛶';
   }
-});
-
-// Pixel Watch Face Simulator Mini Canvas (Crisp Grid)
-const watchCanvas = document.getElementById('watch-canvas');
-const watchCtx = watchCanvas.getContext('2d');
-const watchFontSize = 14;
-const watchCellWidth = 20;
-const watchCellHeight = 19;
-const watchCols = Math.floor(watchCanvas.width / watchCellWidth);
-const watchTotalRows = Math.ceil(watchCanvas.height / watchCellHeight);
-
-const watchDrops = Array.from({ length: watchCols }, (_, i) => ({
-  x: i * watchCellWidth,
-  headRow: Math.random() * -10,
-  speed: 0.2 + Math.random() * 0.2,
-  chars: Array.from({ length: 10 }, () => CHARSETS.matrix()),
-  leadChar: CHARSETS.matrix()
-}));
-
-function renderWatch() {
-  // Clear watch face completely to avoid smear
-  watchCtx.fillStyle = '#000000';
-  watchCtx.fillRect(0, 0, watchCanvas.width, watchCanvas.height);
-
-  watchCtx.font = `700 ${watchFontSize}px "SF Mono", "Courier New", Consolas, Menlo, monospace`;
-  watchCtx.textAlign = 'center';
-  watchCtx.textBaseline = 'middle';
-  const currentTheme = THEMES[state.theme];
-
-  for (let i = 0; i < watchCols; i++) {
-    const drop = watchDrops[i];
-    drop.headRow += drop.speed;
-
-    if (Math.random() < 0.2) {
-      drop.leadChar = CHARSETS[state.charset]();
-    }
-
-    if (drop.headRow - 10 > watchTotalRows) {
-      drop.headRow = Math.random() * -5;
-    }
-
-    const charX = drop.x + (watchCellWidth / 2);
-
-    for (let j = 0; j < 10; j++) {
-      const row = Math.floor(drop.headRow - j);
-      if (row < 0 || row > watchTotalRows) continue;
-
-      const charY = (row * watchCellHeight) + (watchCellHeight / 2);
-      const char = (j === 0) ? drop.leadChar : drop.chars[j];
-
-      if (j === 0) {
-        watchCtx.fillStyle = currentTheme.leadColor;
-        watchCtx.fillText(char, charX, charY);
-      } else if (j <= 2) {
-        watchCtx.fillStyle = `rgb(${currentTheme.headRgb.join(',')})`;
-        watchCtx.fillText(char, charX, charY);
-      } else if (j < 6) {
-        watchCtx.fillStyle = `rgb(${currentTheme.bodyRgb.join(',')})`;
-        watchCtx.fillText(char, charX, charY);
-      } else {
-        watchCtx.fillStyle = `rgba(${currentTheme.tailRgb.join(',')}, 0.4)`;
-        watchCtx.fillText(char, charX, charY);
-      }
-    }
-  }
-
-  requestAnimationFrame(renderWatch);
 }
-requestAnimationFrame(renderWatch);
-
-// Clock update for watch simulator
-function updateWatchClock() {
-  const now = new Date();
-  const hours = String(now.getHours()).padStart(2, '0');
-  const minutes = String(now.getMinutes()).padStart(2, '0');
-  const timeElem = document.getElementById('watch-time');
-  if (timeElem) timeElem.textContent = `${hours}:${minutes}`;
-
-  const options = { weekday: 'short', month: 'short', day: 'numeric' };
-  const dateElem = document.getElementById('watch-date');
-  if (dateElem) dateElem.textContent = now.toLocaleDateString('en-US', options).toUpperCase();
+if (fullscreenBtn) {
+  fullscreenBtn.addEventListener('click', toggleFullscreen);
 }
-setInterval(updateWatchClock, 1000);
-updateWatchClock();
