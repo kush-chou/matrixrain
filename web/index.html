@@ -339,7 +339,7 @@
       <span class="sep">•</span>
       <span>[t] theme</span>
       <span class="sep">•</span>
-      <span>click to ripple</span>
+      <span>drag to rain</span>
     </div>
 
     <div class="hud-tools">
@@ -630,24 +630,55 @@
     }
     requestAnimationFrame(loop);
 
-    // Interactive Touch / Mouse Ripple from WallpaperService.onTouchEvent
-    function triggerTouch(x, y) {
-      state.ripples.push({ x, y, radius: 10, alpha: 1.0 });
-      const col = Math.floor(x / state.fontSize);
-      for (let offset = -2; offset <= 2; offset++) {
-        const c = col + offset;
+    // Glide / Drag Column Trigger directly from Android WallpaperService.onTouchEvent
+    let isPointerDown = false;
+    let lastPointerX = null;
+
+    function triggerAtX(currentX) {
+      const currentCol = Math.floor(currentX / state.fontSize);
+      let startCol = currentCol;
+      let endCol = currentCol;
+
+      if (lastPointerX !== null) {
+        const prevCol = Math.floor(lastPointerX / state.fontSize);
+        startCol = Math.min(prevCol, currentCol);
+        endCol = Math.max(prevCol, currentCol);
+      }
+
+      for (let c = startCol; c <= endCol; c++) {
         if (c >= 0 && c < state.columnSize) {
           state.dropY[c] = 0;
           state.speeds[c] = 1;
           state.frameCounts[c] = 0;
-          state.columnType[c] = (Math.random() < 0.1) ? 3 : 0;
+          state.previousChars[c] = getRandomMatrixChar();
+          // 5% chance Gold stream roll directly matching Android onTouchEvent
+          state.columnType[c] = (Math.random() < 0.05) ? 3 : 0;
         }
       }
+
+      lastPointerX = currentX;
     }
 
     window.addEventListener('pointerdown', (e) => {
       if (e.target.closest('.hud-top') || e.target.closest('.hud-bottom')) return;
-      triggerTouch(e.clientX, e.clientY);
+      isPointerDown = true;
+      triggerAtX(e.clientX);
+    });
+
+    window.addEventListener('pointermove', (e) => {
+      if (!isPointerDown) return;
+      if (e.target.closest('.hud-top') || e.target.closest('.hud-bottom')) return;
+      triggerAtX(e.clientX);
+    });
+
+    window.addEventListener('pointerup', () => {
+      isPointerDown = false;
+      lastPointerX = null;
+    });
+
+    window.addEventListener('pointercancel', () => {
+      isPointerDown = false;
+      lastPointerX = null;
     });
 
     // Auto-Hide HUD for Pure Screensaver Experience
