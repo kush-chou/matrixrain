@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>matrixrain — Authentic Digital Rain for Android & Wear OS</title>
-  <meta name="description" content="Authentic, battery-optimized Matrix digital code rain live wallpaper for Android phones and Wear OS smartwatches. Free on F-Droid and Google Play.">
+  <title>matrixrain — Authentic Digital Rain</title>
+  <meta name="description" content="Authentic, battery-optimized Matrix digital code rain live wallpaper for Android and Wear OS. Free on F-Droid and Google Play.">
   <meta name="keywords" content="matrix rain, live wallpaper, android live wallpaper, wear os watch face, pixel watch, f-droid, matrix code, digital rain">
   
   <!-- Open Graph / Social Media -->
@@ -22,18 +22,278 @@
   <meta name="twitter:description" content="Authentic Matrix digital code rain live wallpaper for Android and Wear OS.">
   <meta name="twitter:image" content="https://matrixrain.app/assets/og-preview.png">
   
-  <!-- Favicon & Icons -->
+  <!-- Favicon -->
   <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon.png">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
   <link rel="apple-touch-icon" sizes="180x180" href="assets/apple-touch-icon.png">
-  
-  <link rel="stylesheet" href="styles.css">
+
+  <style>
+    /* Pure Minimalist Stylesheet (Inlined to prevent browser caching desync) */
+    :root {
+      --matrix-green: #00ff66;
+      --matrix-dim: #003b15;
+      --bg-black: #000000;
+      --text-main: #e8faed;
+      --text-muted: #648a72;
+      --font-mono: "Consolas", "Monaco", "Menlo", "SF Mono", "Courier New", monospace;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    html, body {
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background-color: #000000;
+      color: var(--text-main);
+      font-family: var(--font-mono);
+      position: relative;
+    }
+
+    #matrix-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      display: block;
+      z-index: 1;
+      background-color: #000000;
+    }
+
+    /* Top HUD Header */
+    .hud-top {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 10;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.25rem 2rem;
+      pointer-events: auto;
+      background: linear-gradient(180deg, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0) 100%);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+
+    .hud-brand {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      cursor: default;
+    }
+
+    .prompt {
+      color: var(--matrix-green);
+      font-size: 1.2rem;
+      font-weight: 700;
+      text-shadow: 0 0 10px rgba(0, 255, 102, 0.7);
+    }
+
+    .brand-title {
+      color: #ffffff;
+      font-size: 1.15rem;
+      font-weight: 600;
+      letter-spacing: -0.3px;
+    }
+
+    .hud-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+    }
+
+    .hud-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      padding: 0.45rem 0.95rem;
+      background: rgba(8, 16, 11, 0.75);
+      border: 1px solid rgba(0, 255, 102, 0.28);
+      border-radius: 9999px;
+      color: var(--text-main);
+      text-decoration: none;
+      font-size: 0.82rem;
+      font-family: var(--font-mono);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      white-space: nowrap;
+    }
+
+    .hud-btn:hover {
+      background: rgba(0, 255, 102, 0.15);
+      border-color: var(--matrix-green);
+      color: #ffffff;
+      box-shadow: 0 0 12px rgba(0, 255, 102, 0.35);
+      transform: translateY(-1px);
+    }
+
+    .hud-icon {
+      width: 15px !important;
+      height: 15px !important;
+      min-width: 15px !important;
+      max-width: 15px !important;
+      min-height: 15px !important;
+      max-height: 15px !important;
+      flex-shrink: 0;
+      display: inline-block;
+      vertical-align: middle;
+    }
+
+    /* Bottom HUD Bar */
+    .hud-bottom {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      z-index: 10;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.25rem 2rem;
+      pointer-events: auto;
+      background: linear-gradient(0deg, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0) 100%);
+      transition: opacity 0.4s ease, transform 0.4s ease;
+    }
+
+    .hud-themes {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+    }
+
+    .theme-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      background-color: var(--dot-color);
+      cursor: pointer;
+      opacity: 0.45;
+      transition: all 0.2s ease;
+      outline: none;
+    }
+
+    .theme-dot:hover {
+      opacity: 0.85;
+      transform: scale(1.2);
+    }
+
+    .theme-dot.active {
+      opacity: 1;
+      border-color: #ffffff;
+      box-shadow: 0 0 10px var(--dot-color);
+      transform: scale(1.2);
+    }
+
+    .hud-privacy {
+      margin-left: 0.5rem;
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 0.75rem;
+      opacity: 0.5;
+      transition: opacity 0.2s ease;
+    }
+
+    .hud-privacy:hover {
+      opacity: 1;
+      color: var(--text-main);
+    }
+
+    .hud-hints {
+      color: var(--text-muted);
+      font-size: 0.78rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      opacity: 0.7;
+    }
+
+    .hud-hints .sep {
+      opacity: 0.35;
+    }
+
+    .hud-tools {
+      display: flex;
+      align-items: center;
+    }
+
+    .hud-icon-btn {
+      background: rgba(8, 16, 11, 0.75);
+      border: 1px solid rgba(0, 255, 102, 0.25);
+      border-radius: 6px;
+      color: var(--text-muted);
+      font-size: 0.9rem;
+      padding: 0.3rem 0.6rem;
+      cursor: pointer;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      transition: all 0.2s ease;
+      outline: none;
+    }
+
+    .hud-icon-btn:hover {
+      border-color: var(--matrix-green);
+      color: #ffffff;
+      box-shadow: 0 0 10px rgba(0, 255, 102, 0.3);
+    }
+
+    /* Zen Screensaver Auto-Hide Mode */
+    body.hud-hidden {
+      cursor: none;
+    }
+
+    body.hud-hidden .hud-top {
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(-8px);
+    }
+
+    body.hud-hidden .hud-bottom {
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(8px);
+    }
+
+    @media (max-width: 768px) {
+      .hud-top {
+        padding: 1rem 1.25rem;
+        flex-direction: column;
+        gap: 0.85rem;
+        align-items: flex-start;
+      }
+      .hud-actions {
+        width: 100%;
+        flex-wrap: wrap;
+        gap: 0.45rem;
+      }
+      .hud-btn {
+        padding: 0.35rem 0.75rem;
+        font-size: 0.75rem;
+      }
+      .hud-bottom {
+        padding: 1rem 1.25rem;
+        gap: 0.75rem;
+      }
+      .hud-hints {
+        display: none;
+      }
+    }
+  </style>
 </head>
 <body>
-  <!-- Full-Screen Living Digital Rain Canvas -->
+  <!-- Full-Screen Digital Rain Canvas -->
   <canvas id="matrix-canvas"></canvas>
 
-  <!-- Minimalist HUD Overlay (Auto-hides on inactivity) -->
+  <!-- Minimalist HUD Overlay (Auto-hides after 3.5s of inactivity) -->
   <header class="hud-top">
     <div class="hud-brand">
       <span class="prompt">&gt;_</span>
@@ -42,21 +302,21 @@
 
     <nav class="hud-actions">
       <a href="https://play.google.com/store/apps/details?id=com.example.matrixrain" target="_blank" rel="noopener" class="hud-btn" title="Get it on Google Play">
-        <svg class="hud-icon" viewBox="0 0 24 24" fill="currentColor">
+        <svg class="hud-icon" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" style="width: 15px; height: 15px; min-width: 15px; max-width: 15px;">
           <path d="M3.5 2.3c-.2.3-.3.8-.3 1.4v16.6c0 .6.1 1.1.3 1.4l9.3-9.7L3.5 2.3zm12.3 8.3l-2.6 1.4 2.6 1.4 3.4-1.9c.8-.5.8-1.4 0-1.9l-3.4-1.9zm-1.8-1l-7.7-7.7c.3-.2.8-.2 1.3 0l8.7 5-2.3 2.7zm0 4.8l2.3 2.7-8.7 5c-.5.2-1 .2-1.3 0l7.7-7.7z"/>
         </svg>
         <span>Google Play</span>
       </a>
 
       <a href="https://f-droid.org/packages/com.example.matrixrain/" target="_blank" rel="noopener" class="hud-btn" title="Free and Open Source on F-Droid">
-        <svg class="hud-icon" viewBox="0 0 24 24" fill="currentColor">
+        <svg class="hud-icon" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" style="width: 15px; height: 15px; min-width: 15px; max-width: 15px;">
           <path d="M7.4 3.7c-.4 0-.8.4-.8.8v1.6H5.2c-.8 0-1.5.7-1.5 1.5v6.9c0 .8.7 1.5 1.5 1.5h1.4v1.6c0 .4.4.8.8.8h1.6c.4 0 .8-.4.8-.8v-1.6h5.2v1.6c0 .4.4.8.8.8h1.6c.4 0 .8-.4.8-.8V16h1.4c.8 0 1.5-.7 1.5-1.5V7.6c0-.8-.7-1.5-1.5-1.5h-1.4V4.5c0-.4-.4-.8-.8-.8H16.6c-.4 0-.8.4-.8.8v1.6H9.8V4.5c0-.4-.4-.8-.8-.8H7.4zm1.2 5.5a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4zm6.8 0a1.2 1.2 0 110 2.4 1.2 1.2 0 010-2.4z"/>
         </svg>
         <span>F-Droid</span>
       </a>
 
       <a href="https://github.com/kush-chou/neocoderain" target="_blank" rel="noopener" class="hud-btn" title="View Source on GitHub">
-        <svg class="hud-icon" viewBox="0 0 24 24" fill="currentColor">
+        <svg class="hud-icon" width="15" height="15" viewBox="0 0 24 24" fill="currentColor" style="width: 15px; height: 15px; min-width: 15px; max-width: 15px;">
           <path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/>
         </svg>
         <span>GitHub</span>
@@ -89,6 +349,330 @@
     </div>
   </footer>
 
-  <script src="app.js"></script>
+  <script>
+    /**
+     * matrixrain — Razor-Sharp Discrete Grid Engine
+     */
+    const KATAKANA = 'ｧｱｨｲｩｳｪｴｫｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾖﾗﾘﾙﾚﾛﾜｦﾝ';
+    const DIGITS = '0123456789';
+    const SYMBOLS = ':・=*+-<>¦|~';
+    const GLYPHS = (KATAKANA + DIGITS + SYMBOLS).split('');
+
+    const THEMES = {
+      classic: {
+        name: 'Classic Green',
+        headColor: '#FFFFFF',
+        glowColor: 'rgba(0, 255, 102, 0.85)',
+        leadRgb: [255, 255, 255],
+        neckRgb: [120, 255, 170],
+        bodyRgb: [0, 255, 102],
+        tailRgb: [0, 140, 50]
+      },
+      cyan: {
+        name: 'Trinity Cyan',
+        headColor: '#FFFFFF',
+        glowColor: 'rgba(0, 229, 255, 0.85)',
+        leadRgb: [255, 255, 255],
+        neckRgb: [160, 245, 255],
+        bodyRgb: [0, 229, 255],
+        tailRgb: [0, 130, 170]
+      },
+      crimson: {
+        name: 'Matrix Red',
+        headColor: '#FFFFFF',
+        glowColor: 'rgba(255, 51, 68, 0.85)',
+        leadRgb: [255, 255, 255],
+        neckRgb: [255, 160, 170],
+        bodyRgb: [255, 51, 68],
+        tailRgb: [160, 20, 35]
+      },
+      amber: {
+        name: 'Zion Amber',
+        headColor: '#FFFFFF',
+        glowColor: 'rgba(255, 183, 0, 0.85)',
+        leadRgb: [255, 255, 255],
+        neckRgb: [255, 230, 160],
+        bodyRgb: [255, 183, 0],
+        tailRgb: [170, 110, 0]
+      },
+      violet: {
+        name: 'Cyber Violet',
+        headColor: '#FFFFFF',
+        glowColor: 'rgba(213, 0, 249, 0.85)',
+        leadRgb: [255, 255, 255],
+        neckRgb: [245, 160, 255],
+        bodyRgb: [213, 0, 249],
+        tailRgb: [130, 0, 160]
+      },
+      monochrome: {
+        name: 'Monochrome White',
+        headColor: '#FFFFFF',
+        glowColor: 'rgba(255, 255, 255, 0.75)',
+        leadRgb: [255, 255, 255],
+        neckRgb: [230, 230, 230],
+        bodyRgb: [180, 180, 180],
+        tailRgb: [90, 90, 90]
+      }
+    };
+
+    const THEME_KEYS = Object.keys(THEMES);
+
+    const state = {
+      theme: 'classic',
+      fontSize: 16,
+      cellWidth: 20,
+      cellHeight: 22,
+      columns: [],
+      ripples: [],
+      paused: false
+    };
+
+    const canvas = document.getElementById('matrix-canvas');
+    const ctx = canvas.getContext('2d');
+
+    function randomGlyph() {
+      return GLYPHS[Math.floor(Math.random() * GLYPHS.length)];
+    }
+
+    function initGrid() {
+      const width = window.innerWidth;
+      const height = window.innerHeight;
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+      canvas.width = Math.floor(width * dpr);
+      canvas.height = Math.floor(height * dpr);
+      canvas.style.width = `${width}px`;
+      canvas.style.height = `${height}px`;
+
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      state.fontSize = width < 768 ? 14 : 16;
+      state.cellWidth = width < 768 ? 18 : 20;
+      state.cellHeight = width < 768 ? 20 : 22;
+
+      const numCols = Math.floor(width / state.cellWidth);
+      const totalRows = Math.ceil(height / state.cellHeight);
+      state.columns = [];
+
+      for (let i = 0; i < numCols; i++) {
+        const streamLen = 12 + Math.floor(Math.random() * 20);
+        // Distribute drops throughout the screen so canvas is immediately alive
+        const initialHead = Math.floor(Math.random() * (totalRows + streamLen)) - streamLen;
+        
+        state.columns.push({
+          x: i * state.cellWidth + (state.cellWidth / 2),
+          colIndex: i,
+          headRow: initialHead,
+          rowProgress: 0,
+          rowsPerSec: 10 + Math.random() * 16,
+          length: streamLen,
+          chars: Array.from({ length: streamLen }, () => randomGlyph()),
+          leadChar: randomGlyph()
+        });
+      }
+    }
+
+    window.addEventListener('resize', initGrid);
+    initGrid();
+
+    let lastTime = 0;
+
+    function render(timestamp) {
+      if (!lastTime) lastTime = timestamp;
+      const dt = Math.min((timestamp - lastTime) / 1000, 0.1);
+      lastTime = timestamp;
+
+      if (!state.paused) {
+        const width = window.innerWidth;
+        const height = window.innerHeight;
+        const totalRows = Math.ceil(height / state.cellHeight);
+        const theme = THEMES[state.theme];
+
+        // 1. Full Canvas Clear Every Frame (Pure OLED Black #000000)
+        ctx.fillStyle = '#000000';
+        ctx.fillRect(0, 0, width, height);
+
+        // 2. Process Ripples
+        for (let r = state.ripples.length - 1; r >= 0; r--) {
+          const rip = state.ripples[r];
+          rip.radius += 320 * dt;
+          rip.alpha -= 1.2 * dt;
+
+          if (rip.alpha <= 0) {
+            state.ripples.splice(r, 1);
+            continue;
+          }
+
+          ctx.save();
+          ctx.beginPath();
+          ctx.arc(rip.x, rip.y, rip.radius, 0, Math.PI * 2);
+          ctx.strokeStyle = `rgba(${theme.bodyRgb[0]}, ${theme.bodyRgb[1]}, ${theme.bodyRgb[2]}, ${(rip.alpha * 0.5).toFixed(2)})`;
+          ctx.lineWidth = 1.5;
+          ctx.stroke();
+          ctx.restore();
+        }
+
+        // 3. Render Characters with Crisp Font & Discrete Grid
+        ctx.font = `700 ${state.fontSize}px "Consolas", "Monaco", "Menlo", "SF Mono", "Courier New", monospace`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+
+        for (let i = 0; i < state.columns.length; i++) {
+          const col = state.columns[i];
+
+          // Advance discrete grid row
+          col.rowProgress += col.rowsPerSec * dt;
+          if (col.rowProgress >= 1) {
+            const step = Math.floor(col.rowProgress);
+            col.rowProgress -= step;
+            col.headRow += step;
+
+            for (let s = 0; s < step; s++) {
+              col.chars.pop();
+              col.chars.unshift(col.leadChar);
+              col.leadChar = randomGlyph();
+            }
+          }
+
+          // Shimmer in-place mutation
+          if (Math.random() < 0.14) {
+            const mutateIndex = Math.floor(Math.random() * col.chars.length);
+            col.chars[mutateIndex] = randomGlyph();
+          }
+
+          // Ripple deflection
+          for (let r = 0; r < state.ripples.length; r++) {
+            const rip = state.ripples[r];
+            const dist = Math.abs(col.x - rip.x);
+            if (Math.abs(dist - rip.radius) < 25) {
+              col.headRow -= 0.5;
+              col.chars[0] = '⚡';
+            }
+          }
+
+          // Reset when drop exits screen
+          if (col.headRow - col.length > totalRows + 2) {
+            col.headRow = Math.floor(Math.random() * -10) - 2;
+            col.rowsPerSec = 10 + Math.random() * 16;
+            col.length = 12 + Math.floor(Math.random() * 20);
+            col.chars = Array.from({ length: col.length }, () => randomGlyph());
+          }
+
+          // Draw column glyphs at integer row cells
+          for (let j = 0; j < col.length; j++) {
+            const row = col.headRow - j;
+            if (row < 0 || row > totalRows) continue;
+
+            const charY = (row * state.cellHeight) + (state.cellHeight / 2);
+            const char = (j === 0) ? col.leadChar : col.chars[j];
+            const normalizedPos = j / col.length;
+
+            if (j === 0) {
+              // Lead Head (Crisp pure white with light glow)
+              ctx.save();
+              ctx.fillStyle = theme.headColor;
+              ctx.shadowBlur = 6;
+              ctx.shadowColor = theme.glowColor;
+              ctx.fillText(char, col.x, charY);
+              ctx.restore();
+            } else if (j <= 2) {
+              // High-brightness electric upper neck
+              const alpha = 0.95 - (j * 0.08);
+              ctx.fillStyle = `rgba(${theme.neckRgb[0]}, ${theme.neckRgb[1]}, ${theme.neckRgb[2]}, ${alpha.toFixed(2)})`;
+              ctx.fillText(char, col.x, charY);
+            } else if (normalizedPos < 0.6) {
+              // Mid stream body
+              const alpha = 0.80 - ((normalizedPos - 0.15) * 0.65);
+              ctx.fillStyle = `rgba(${theme.bodyRgb[0]}, ${theme.bodyRgb[1]}, ${theme.bodyRgb[2]}, ${alpha.toFixed(2)})`;
+              ctx.fillText(char, col.x, charY);
+            } else {
+              // Decaying tail smoothly into pure black
+              const alpha = Math.max(0.06, (1.0 - normalizedPos) * 0.70);
+              ctx.fillStyle = `rgba(${theme.tailRgb[0]}, ${theme.tailRgb[1]}, ${theme.tailRgb[2]}, ${alpha.toFixed(2)})`;
+              ctx.fillText(char, col.x, charY);
+            }
+          }
+        }
+      }
+
+      requestAnimationFrame(render);
+    }
+
+    requestAnimationFrame(render);
+
+    // Interactive Ripple
+    function triggerRipple(x, y) {
+      state.ripples.push({ x, y, radius: 12, alpha: 1.0 });
+
+      const clickCol = Math.floor(x / state.cellWidth);
+      for (let offset = -3; offset <= 3; offset++) {
+        const col = state.columns[clickCol + offset];
+        if (col) {
+          col.headRow -= (4 - Math.abs(offset)) * 0.8;
+          for (let k = 0; k < 3; k++) col.chars[k] = randomGlyph();
+        }
+      }
+    }
+
+    window.addEventListener('pointerdown', (e) => {
+      if (e.target.closest('.hud-top') || e.target.closest('.hud-bottom')) return;
+      triggerRipple(e.clientX, e.clientY);
+    });
+
+    // Zen Screensaver Auto-Hide (3.5s inactivity)
+    let hideTimer = null;
+    function resetInactivityTimer() {
+      document.body.classList.remove('hud-hidden');
+      clearTimeout(hideTimer);
+      hideTimer = setTimeout(() => {
+        document.body.classList.add('hud-hidden');
+      }, 3500);
+    }
+
+    ['mousemove', 'mousedown', 'keydown', 'touchstart'].forEach((evt) => {
+      window.addEventListener(evt, resetInactivityTimer, { passive: true });
+    });
+    resetInactivityTimer();
+
+    // Theme Selection
+    function setTheme(themeKey) {
+      if (!THEMES[themeKey]) return;
+      state.theme = themeKey;
+      document.querySelectorAll('.theme-dot').forEach((dot) => {
+        dot.classList.toggle('active', dot.dataset.theme === themeKey);
+      });
+    }
+
+    document.querySelectorAll('.theme-dot').forEach((dot) => {
+      dot.addEventListener('click', () => setTheme(dot.dataset.theme));
+    });
+
+    // Keyboard Shortcuts
+    window.addEventListener('keydown', (e) => {
+      if (e.key === ' ' || e.code === 'Space') {
+        e.preventDefault();
+        state.paused = !state.paused;
+      } else if (e.key === 't' || e.key === 'T') {
+        const currentIdx = THEME_KEYS.indexOf(state.theme);
+        const nextIdx = (currentIdx + 1) % THEME_KEYS.length;
+        setTheme(THEME_KEYS[nextIdx]);
+      } else if (e.key === 'f' || e.key === 'F') {
+        toggleFullscreen();
+      }
+    });
+
+    // Fullscreen Toggle
+    const fullscreenBtn = document.getElementById('fullscreen-btn');
+    function toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(() => {});
+        if (fullscreenBtn) fullscreenBtn.textContent = '✕';
+      } else {
+        document.exitFullscreen().catch(() => {});
+        if (fullscreenBtn) fullscreenBtn.textContent = '⛶';
+      }
+    }
+    if (fullscreenBtn) fullscreenBtn.addEventListener('click', toggleFullscreen);
+  </script>
 </body>
 </html>
