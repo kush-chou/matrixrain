@@ -4,20 +4,34 @@ plugins {
 
 android {
     namespace 'com.example.matrixrain'
-    compileSdk 33
+    compileSdk 35
 
     defaultConfig {
         applicationId "com.example.matrixrain"
         minSdk 24
-        targetSdk 33
+        targetSdk 35
         versionCode 1
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        release {
+            def keystorePath = System.getenv("ANDROID_KEYSTORE_PATH") ?: project.findProperty("KEYSTORE_PATH") ?: "../release.keystore"
+            def keystoreFile = file(keystorePath)
+            if (keystoreFile.exists()) {
+                storeFile keystoreFile
+                storePassword System.getenv("ANDROID_KEYSTORE_PASSWORD") ?: project.findProperty("KEYSTORE_PASSWORD") ?: "matrixrain"
+                keyAlias System.getenv("ANDROID_KEY_ALIAS") ?: project.findProperty("KEY_ALIAS") ?: "matrixrain"
+                keyPassword System.getenv("ANDROID_KEY_PASSWORD") ?: project.findProperty("KEY_PASSWORD") ?: "matrixrain"
+            }
+        }
+    }
+
     buildTypes {
         release {
+            signingConfig signingConfigs.release
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }

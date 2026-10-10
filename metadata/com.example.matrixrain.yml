@@ -1,0 +1,26 @@
+Categories:
+  - Personalization
+  - Theming
+License: MIT
+AuthorName: Kushagra Choudhary
+SourceCode: https://github.com/kush-chou/matrixrain
+IssueTracker: https://github.com/kush-chou/matrixrain/issues
+WebSite: https://github.com/kush-chou/matrixrain
+
+AutoName: Matrix Rain
+
+RepoType: git
+Repo: https://github.com/kush-chou/matrixrain.git
+
+Builds:
+  - versionName: '1.0'
+    versionCode: 1
+    commit: 'v1.0'
+    subdir: app
+    gradle:
+      - assembleRelease
+
+AutoUpdateMode: Version
+UpdateCheckMode: Tags
+CurrentVersion: '1.0'
+CurrentVersionCode: 1
