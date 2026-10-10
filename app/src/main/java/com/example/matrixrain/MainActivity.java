@@ -8,12 +8,30 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 public class MainActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        View mainRoot = findViewById(R.id.main_root);
+        if (mainRoot != null) {
+            final int basePadding = (int) (16 * getResources().getDisplayMetrics().density);
+            ViewCompat.setOnApplyWindowInsetsListener(mainRoot, (v, windowInsets) -> {
+                Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
+                v.setPadding(
+                    basePadding + insets.left,
+                    basePadding + insets.top,
+                    basePadding + insets.right,
+                    basePadding + insets.bottom
+                );
+                return windowInsets;
+            });
+        }
 
         Button setWallpaperButton = findViewById(R.id.set_wallpaper_button);
         setWallpaperButton.setOnClickListener(new View.OnClickListener() {

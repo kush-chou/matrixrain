@@ -9,6 +9,9 @@ import android.widget.Button;
 import android.widget.SeekBar;
 import android.widget.Switch;
 import android.widget.Toast;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 public class SettingsActivity extends Activity {
 
@@ -19,6 +22,21 @@ public class SettingsActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
+
+        View rootView = findViewById(R.id.settings_root);
+        if (rootView != null) {
+            final int basePadding = (int) (16 * getResources().getDisplayMetrics().density);
+            ViewCompat.setOnApplyWindowInsetsListener(rootView, (v, windowInsets) -> {
+                Insets insets = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
+                v.setPadding(
+                    basePadding + insets.left,
+                    basePadding + insets.top,
+                    basePadding + insets.right,
+                    basePadding + insets.bottom
+                );
+                return windowInsets;
+            });
+        }
 
         seekDensity = findViewById(R.id.seekbar_density);
         seekSpeed = findViewById(R.id.seekbar_speed);
