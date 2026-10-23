@@ -1,4 +1,4 @@
-package com.example.matrixrain.billing;
+package app.matrixrain.billing;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -33,7 +33,7 @@ public class BillingManagerImpl implements BillingManager {
                 .setTitle("Matrix Rain FOSS Edition")
                 .setMessage("All features are already 100% unlocked in this Free and Open Source edition!\n\nIf you enjoy this app and would like to support ongoing development, consider sponsoring on GitHub.")
                 .setPositiveButton("Support on GitHub", (dialog, which) -> {
-                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/kush-chou/neocoderain"));
+                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/kush-chou/matrixrain"));
                     activity.startActivity(browserIntent);
                 })
                 .setNegativeButton("Close", null)

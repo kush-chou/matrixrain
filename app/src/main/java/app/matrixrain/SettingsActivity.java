@@ -1,4 +1,4 @@
-package com.example.matrixrain;
+package app.matrixrain;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
@@ -13,8 +13,8 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.matrixrain.billing.BillingManager;
-import com.example.matrixrain.billing.BillingManagerImpl;
+import app.matrixrain.billing.BillingManager;
+import app.matrixrain.billing.BillingManagerImpl;
 
 public class SettingsActivity extends Activity {
 

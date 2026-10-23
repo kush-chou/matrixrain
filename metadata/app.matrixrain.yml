@@ -3,14 +3,14 @@ Categories:
   - Theming
 License: MIT
 AuthorName: Kushagra Choudhary
-SourceCode: https://github.com/kush-chou/neocoderain
-IssueTracker: https://github.com/kush-chou/neocoderain/issues
+SourceCode: https://github.com/kush-chou/matrixrain
+IssueTracker: https://github.com/kush-chou/matrixrain/issues
 WebSite: https://matrixrain.app/
 
 AutoName: Matrix Rain
 
 RepoType: git
-Repo: https://github.com/kush-chou/neocoderain.git
+Repo: https://github.com/kush-chou/matrixrain.git
 
 Builds:
   - versionName: '1.0-foss'

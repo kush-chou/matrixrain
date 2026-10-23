@@ -1,4 +1,4 @@
-package com.example.matrixrain;
+package app.matrixrain;
 
 import android.app.Activity;
 import android.app.WallpaperManager;

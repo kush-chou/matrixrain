@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    namespace 'com.example.matrixrain'
+    namespace 'app.matrixrain'
     compileSdk 35
 
     defaultConfig {
-        applicationId "com.example.matrixrain"
+        applicationId "app.matrixrain"
         minSdk 24
         targetSdk 35
         versionCode 1

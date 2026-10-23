@@ -2,4 +2,4 @@
 <wallpaper xmlns:android="http://schemas.android.com/apk/res/android"
     android:description="@string/wallpaper_description"
     android:thumbnail="@android:drawable/sym_def_app_icon"
-    android:settingsActivity="com.example.matrixrain.SettingsActivity" />
+    android:settingsActivity="app.matrixrain.SettingsActivity" />

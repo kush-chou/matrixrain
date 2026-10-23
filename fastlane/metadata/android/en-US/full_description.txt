@@ -14,4 +14,4 @@ Wear OS Companion:
 Bring the digital code rain to your wrist on Google Pixel Watch and Samsung Galaxy Watch with full Watch Face Format (WFF) and low-power Always-On Display (AOD) support.
 
 Free & Open Source:
-Available on F-Droid with all features unlocked. Check out the source code at https://github.com/kush-chou/neocoderain
+Available on F-Droid with all features unlocked. Check out the source code at https://github.com/kush-chou/matrixrain

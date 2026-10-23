@@ -28,7 +28,7 @@ print('✔ matrixrain.app landing assets validated successfully.')
 # 3. Verify F-Droid & Fastlane metadata and store graphics
 $PYTHON -c "
 import os
-assert os.path.exists('metadata/com.example.matrixrain.yml'), 'F-Droid metadata missing'
+assert os.path.exists('metadata/app.matrixrain.yml'), 'F-Droid metadata missing'
 assert os.path.exists('fastlane/metadata/android/en-US/full_description.txt'), 'Fastlane description missing'
 assert os.path.exists('fastlane/metadata/android/en-US/images/icon.png'), 'Store 512x512 icon missing'
 assert os.path.exists('fastlane/metadata/android/en-US/images/featureGraphic.png'), 'Feature graphic missing'

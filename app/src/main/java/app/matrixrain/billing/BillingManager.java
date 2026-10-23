@@ -1,4 +1,4 @@
-package com.example.matrixrain.billing;
+package app.matrixrain.billing;
 
 import android.app.Activity;
 

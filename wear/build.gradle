@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    namespace 'com.example.matrixrain.wear'
+    namespace 'app.matrixrain.wear'
     compileSdk 35
 
     defaultConfig {
-        applicationId "com.example.matrixrain.watchface"
+        applicationId "app.matrixrain.watchface"
         minSdk 30 // Wear OS 3+ (Pixel Watch 1/2/3/4/5, Galaxy Watch 4/5/6/7)
         targetSdk 35
         versionCode 1
