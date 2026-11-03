@@ -347,24 +347,17 @@ def main():
     generate_phone_screenshot(f"{fastlane_base}/phoneScreenshots/2_touch_shockwave.png", "INTERACTIVE TOUCH RIPPLE", "Tap to Deflect Falling Glyphs", theme="cyan")
     generate_phone_screenshot(f"{fastlane_base}/phoneScreenshots/3_custom_palettes.png", "CRIMSON VIRUS & GOLD NEO", "Multi-Theme Cyberpunk Engine", theme="crimson")
 
-    # Landing / Web Assets
-    landing_assets = "landing/assets"
-    generate_opengraph_preview(f"{landing_assets}/og-preview.png")
+    # Web Assets
+    web_assets = "web/assets"
+    os.makedirs(web_assets, exist_ok=True)
+    generate_opengraph_preview(f"{web_assets}/og-preview.png")
     
     # Favicons & Touch Icons
     fav = Image.open(f"{fastlane_base}/icon.png")
-    fav.resize((180, 180), Image.Resampling.LANCZOS).save(f"{landing_assets}/apple-touch-icon.png", "PNG")
-    fav.resize((32, 32), Image.Resampling.LANCZOS).save(f"{landing_assets}/favicon.png", "PNG")
-    fav.resize((32, 32), Image.Resampling.LANCZOS).save(f"landing/favicon.ico", "ICO")
-    print("✔ Generated Web Favicons & Apple Touch Icons in landing/assets")
-
-    # Mirror assets to web/ directory
-    os.makedirs("web/assets", exist_ok=True)
-    fav.resize((180, 180), Image.Resampling.LANCZOS).save("web/assets/apple-touch-icon.png", "PNG")
-    fav.resize((32, 32), Image.Resampling.LANCZOS).save("web/assets/favicon.png", "PNG")
+    fav.resize((180, 180), Image.Resampling.LANCZOS).save(f"{web_assets}/apple-touch-icon.png", "PNG")
+    fav.resize((32, 32), Image.Resampling.LANCZOS).save(f"{web_assets}/favicon.png", "PNG")
     fav.resize((32, 32), Image.Resampling.LANCZOS).save("web/favicon.ico", "ICO")
-    import shutil
-    shutil.copyfile(f"{landing_assets}/og-preview.png", "web/assets/og-preview.png")
+    print("✔ Generated Web Favicons & Apple Touch Icons in web/assets")
 
     # Android app mipmap densities
     generate_mipmap_icons("app/src/main/res")

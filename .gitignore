@@ -1,6 +1,11 @@
 # Project exclude paths
+local.properties
+*.keystore
+*.jks
+.idea/
+*.iml
+.DS_Store
+.vercel
 /.gradle/
 /build/
 /app/build/
-.DS_Store
-.vercel
