@@ -3,9 +3,12 @@ package app.matrixrain;
 import android.app.WallpaperManager;
 import android.content.ComponentName;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.view.View;
+import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -67,6 +70,17 @@ public class MainActivity extends AppCompatActivity {
         if (matrixRainView != null) {
             matrixRainView.reloadPreferences();
             matrixRainView.startAnimation();
+        }
+        updateHeaderTheme();
+    }
+
+    private void updateHeaderTheme() {
+        SharedPreferences sp = PreferenceManager.getDefaultSharedPreferences(this);
+        String theme = sp.getString(RainPreferences.KEY_THEME, RainPreferences.THEME_CLASSIC);
+        RainPreferences.Palette palette = RainPreferences.getPalette(theme);
+        TextView headerPrompt = findViewById(R.id.header_prompt);
+        if (headerPrompt != null) {
+            headerPrompt.setTextColor(palette.textColor);
         }
     }
 

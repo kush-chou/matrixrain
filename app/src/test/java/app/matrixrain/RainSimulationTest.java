@@ -140,8 +140,15 @@ public class RainSimulationTest {
     @Test
     public void testPreferencesDefaults() {
         RainPreferences prefs = new RainPreferences();
-        assertEquals("Default drawDelay should be 40ms", 40, prefs.getDrawDelay());
-        assertEquals("Default fontSize should be 20", 20, prefs.getFontSize());
+        assertEquals("Default drawDelay should be 22ms", 22, prefs.getDrawDelay());
+        assertEquals("Calculated drawDelay for default should be 22ms",
+                RainPreferences.calculateDrawDelay(RainPreferences.DEFAULT_SPEED_PROGRESS), prefs.getDrawDelay());
+        assertEquals("Draw delay at 0% should be 36ms", 36, RainPreferences.calculateDrawDelay(0));
+        assertEquals("Draw delay at 100% should be 16ms", 16, RainPreferences.calculateDrawDelay(100));
+        assertTrue("Draw delay should never exceed 36ms", RainPreferences.calculateDrawDelay(-10) <= 36);
+        assertEquals("Default fontSize should be 42", 42, prefs.getFontSize());
+        assertEquals("Font size at 0% should be 28", 28, RainPreferences.calculateFontSize(0));
+        assertEquals("Font size at 100% should be 56", 56, RainPreferences.calculateFontSize(100));
         assertTrue("Virus should be enabled by default", prefs.isVirusEnabled());
         assertTrue("Gold should be enabled by default", prefs.isGoldEnabled());
         assertTrue("Messages should be enabled by default", prefs.isMessagesEnabled());

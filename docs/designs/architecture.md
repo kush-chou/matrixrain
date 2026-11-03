@@ -91,8 +91,8 @@ flowchart TD
 #### `RainPreferences` (Configuration Adapter)
 * **Constraints**: Centralized contract between `SharedPreferences` and execution components.
 * **Metric Conversions**:
-  - Frame delay: $\tau = 110 - \text{speedProgress}$ (10ms to 110ms range).
-  - Font size: $\phi = 10 + \lfloor (100 - \text{densityProgress}) / 2 \rfloor$ (10px to 60px range).
+  - Frame delay: $\tau = 36 - \lfloor (\text{speedProgress} \times 20) / 100 \rfloor$ (36ms to 16ms range, ~28fps to 60fps).
+  - Font size (Glyph Size): $\phi = 28 + \lfloor (\text{glyphSizeProgress} \times 28) / 100 \rfloor$ (28px to 56px unscaled base range, scaled by display density multiplier).
   - Feature toggles: Red Virus drops, Gold Neo drops, Hidden Messages, Background Depth, Glitch Effects, Touch Interaction.
 
 #### `MatrixRainView` (Interactive View Component)

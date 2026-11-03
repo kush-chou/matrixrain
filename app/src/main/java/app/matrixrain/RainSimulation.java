@@ -102,13 +102,13 @@ public class RainSimulation {
 
         if (enableVirus && roll > 0.98f) {
             columnType[i] = TYPE_VIRUS;
-            speeds[i] = random.nextInt(2) + 1;
+            speeds[i] = 1;
         } else if (enableGold && roll > 0.96f) {
             columnType[i] = TYPE_GOLD;
-            speeds[i] = random.nextInt(3) + 2;
+            speeds[i] = random.nextInt(2) + 1;
         } else if (enableDepth && roll > 0.60f) {
             columnType[i] = TYPE_BACKGROUND;
-            speeds[i] = random.nextInt(2) + 3;
+            speeds[i] = random.nextInt(2) + 2;
         } else {
             columnType[i] = TYPE_NORMAL;
             speeds[i] = random.nextInt(2) + 1;

@@ -1,15 +1,17 @@
 package app.matrixrain;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 import android.view.SurfaceHolder;
+import androidx.core.content.res.ResourcesCompat;
 
 /**
  * SurfaceHolder-based bitmap double-buffer renderer for Matrix Rain.
- * Renders phosphor decay fade, glyph trailing, glowing heads, and glitches.
+ * Renders phosphor decay fade, glyph trailing, radiant dual-pass bloom heads, and glitches.
  */
 public class RainRenderer {
 
@@ -18,7 +20,8 @@ public class RainRenderer {
 
     private Paint textPaint;
     private Paint backgroundPaint;
-    private Paint headPaint;
+    private Paint headGlowPaint;
+    private Paint headCorePaint;
     private Paint virusPaint;
     private Paint goldPaint;
     private Paint fadePaint;
@@ -26,64 +29,135 @@ public class RainRenderer {
     private int width;
     private int height;
     private int fontSize = 16;
+    private Typeface typeface = Typeface.MONOSPACE;
+    private String currentThemeName;
 
     private final Object renderLock = new Object();
 
+    public static Typeface getMatrixTypeface(Context context) {
+        if (context == null) {
+            return Typeface.MONOSPACE;
+        }
+        try {
+            Typeface tf = ResourcesCompat.getFont(context, R.font.share_tech_mono);
+            if (tf != null) {
+                return tf;
+            }
+        } catch (Exception ignored) {
+        }
+        try {
+            Typeface tf = Typeface.createFromAsset(context.getAssets(), "fonts/share_tech_mono.ttf");
+            if (tf != null) {
+                return tf;
+            }
+        } catch (Exception ignored) {
+        }
+        return Typeface.MONOSPACE;
+    }
+
     public RainRenderer() {
-        this(16);
+        this(16, (Typeface) null);
     }
 
     public RainRenderer(int initialFontSize) {
+        this(initialFontSize, (Typeface) null);
+    }
+
+    public RainRenderer(Context context) {
+        this(context, 16);
+    }
+
+    public RainRenderer(Context context, int initialFontSize) {
+        this(initialFontSize, getMatrixTypeface(context));
+    }
+
+    public RainRenderer(int initialFontSize, Typeface typeface) {
         this.fontSize = initialFontSize;
+        this.typeface = (typeface != null) ? typeface : Typeface.MONOSPACE;
         initPaints();
     }
 
-    private void initPaints() {
-        Typeface matrixFont = Typeface.MONOSPACE;
+    public void setTypeface(Typeface typeface) {
+        this.typeface = (typeface != null) ? typeface : Typeface.MONOSPACE;
+        if (textPaint != null) textPaint.setTypeface(this.typeface);
+        if (backgroundPaint != null) backgroundPaint.setTypeface(this.typeface);
+        if (headGlowPaint != null) headGlowPaint.setTypeface(this.typeface);
+        if (headCorePaint != null) headCorePaint.setTypeface(this.typeface);
+        if (virusPaint != null) virusPaint.setTypeface(this.typeface);
+        if (goldPaint != null) goldPaint.setTypeface(this.typeface);
+    }
 
-        textPaint = new Paint();
-        textPaint.setColor(0xFF00FF00);
+    private void initPaints() {
+        Typeface matrixFont = (this.typeface != null) ? this.typeface : Typeface.MONOSPACE;
+
+        textPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         textPaint.setTextSize(fontSize);
         textPaint.setTypeface(matrixFont);
-        textPaint.setAntiAlias(true);
 
-        backgroundPaint = new Paint();
-        backgroundPaint.setColor(0xFF004400);
+        backgroundPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         backgroundPaint.setTextSize(fontSize);
         backgroundPaint.setTypeface(matrixFont);
-        backgroundPaint.setAntiAlias(true);
 
-        headPaint = new Paint();
-        headPaint.setColor(0xFFEEFFEE);
-        headPaint.setTextSize(fontSize);
-        headPaint.setTypeface(matrixFont);
-        headPaint.setShadowLayer(8f, 0, 0, 0xFF00FF00);
-        headPaint.setAntiAlias(true);
+        headGlowPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        headGlowPaint.setTextSize(fontSize);
+        headGlowPaint.setTypeface(matrixFont);
 
-        virusPaint = new Paint();
-        virusPaint.setColor(0xFFFF0000);
+        headCorePaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+        headCorePaint.setTextSize(fontSize);
+        headCorePaint.setTypeface(matrixFont);
+
+        virusPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         virusPaint.setTextSize(fontSize);
         virusPaint.setTypeface(matrixFont);
-        virusPaint.setShadowLayer(5f, 0, 0, 0xFFFF0000);
-        virusPaint.setAntiAlias(true);
 
-        goldPaint = new Paint();
-        goldPaint.setColor(0xFFFFD700);
+        goldPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
         goldPaint.setTextSize(fontSize);
         goldPaint.setTypeface(matrixFont);
-        goldPaint.setShadowLayer(5f, 0, 0, 0xFFFFD700);
-        goldPaint.setAntiAlias(true);
 
         fadePaint = new Paint();
         fadePaint.setColor(Color.BLACK);
         fadePaint.setAlpha(10);
+
+        applyTheme(RainPreferences.getPalette(RainPreferences.THEME_CLASSIC));
+    }
+
+    public void applyTheme(RainPreferences prefs) {
+        if (prefs == null) {
+            return;
+        }
+        applyTheme(prefs.getPalette());
+    }
+
+    public void applyTheme(RainPreferences.Palette palette) {
+        if (palette == null) {
+            return;
+        }
+        this.currentThemeName = palette.name;
+
+        textPaint.setColor(palette.textColor);
+        backgroundPaint.setColor(palette.bgColor);
+
+        // Radiant bloom glow paint (aura pass)
+        headGlowPaint.setColor(palette.glowColor);
+        headGlowPaint.setShadowLayer(16f, 0, 0, palette.glowColor);
+
+        // Brilliant core paint (sharp foreground pass)
+        headCorePaint.setColor(palette.headColor);
+
+        // Virus and Gold glowing paints
+        virusPaint.setColor(palette.virusColor);
+        virusPaint.setShadowLayer(12f, 0, 0, palette.virusColor);
+
+        goldPaint.setColor(palette.goldColor);
+        goldPaint.setShadowLayer(12f, 0, 0, palette.goldColor);
     }
 
     public void updateFontSize(int fontSize) {
         this.fontSize = fontSize;
         if (textPaint != null) textPaint.setTextSize(fontSize);
         if (backgroundPaint != null) backgroundPaint.setTextSize(fontSize);
-        if (headPaint != null) headPaint.setTextSize(fontSize);
+        if (headGlowPaint != null) headGlowPaint.setTextSize(fontSize);
+        if (headCorePaint != null) headCorePaint.setTextSize(fontSize);
         if (virusPaint != null) virusPaint.setTextSize(fontSize);
         if (goldPaint != null) goldPaint.setTextSize(fontSize);
     }
@@ -110,6 +184,10 @@ public class RainRenderer {
     public void render(SurfaceHolder holder, RainSimulation sim, RainPreferences prefs) {
         if (holder == null || sim == null) {
             return;
+        }
+
+        if (prefs != null && (currentThemeName == null || !currentThemeName.equals(prefs.getCurrentTheme()))) {
+            applyTheme(prefs);
         }
 
         Canvas canvas = null;
@@ -140,6 +218,8 @@ public class RainRenderer {
                         Paint p = (sim.getColumnType(i) == RainSimulation.TYPE_BACKGROUND) ? backgroundPaint : textPaint;
                         if (sim.getColumnType(i) == RainSimulation.TYPE_VIRUS) {
                             p = virusPaint;
+                        } else if (sim.getColumnType(i) == RainSimulation.TYPE_GOLD) {
+                            p = goldPaint;
                         }
                         bufferCanvas.drawText(String.valueOf(glitchChar), x, glitchY * fontSize, p);
                     }
@@ -168,15 +248,21 @@ public class RainRenderer {
 
                         int curY = sim.getDropY(i);
                         if (curY >= 0 && curY <= heightRows) {
-                            Paint head = headPaint;
-                            if (sim.getColumnType(i) == RainSimulation.TYPE_VIRUS) {
-                                head = virusPaint;
-                            } else if (sim.getColumnType(i) == RainSimulation.TYPE_GOLD) {
-                                head = goldPaint;
-                            } else if (sim.getColumnType(i) == RainSimulation.TYPE_BACKGROUND) {
-                                head = backgroundPaint;
+                            char ch = sim.getPreviousChar(i);
+                            String str = String.valueOf(ch);
+                            int colType = sim.getColumnType(i);
+
+                            if (colType == RainSimulation.TYPE_VIRUS) {
+                                bufferCanvas.drawText(str, x, curY * fontSize, virusPaint);
+                            } else if (colType == RainSimulation.TYPE_GOLD) {
+                                bufferCanvas.drawText(str, x, curY * fontSize, goldPaint);
+                            } else if (colType == RainSimulation.TYPE_BACKGROUND) {
+                                bufferCanvas.drawText(str, x, curY * fontSize, backgroundPaint);
+                            } else {
+                                // Dual-pass head: radiant bloom glow aura first, then crisp brilliant core
+                                bufferCanvas.drawText(str, x, curY * fontSize, headGlowPaint);
+                                bufferCanvas.drawText(str, x, curY * fontSize, headCorePaint);
                             }
-                            bufferCanvas.drawText(String.valueOf(sim.getPreviousChar(i)), x, curY * fontSize, head);
                         }
                     }
                 }

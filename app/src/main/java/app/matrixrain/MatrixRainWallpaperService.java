@@ -43,12 +43,21 @@ public class MatrixRainWallpaperService extends WallpaperService {
             sharedPreferences = PreferenceManager.getDefaultSharedPreferences(MatrixRainWallpaperService.this);
             sharedPreferences.registerOnSharedPreferenceChangeListener(this);
             prefs.load(sharedPreferences);
-            renderer.updateFontSize(prefs.getFontSize());
+            renderer.setTypeface(RainRenderer.getMatrixTypeface(MatrixRainWallpaperService.this));
+            renderer.updateFontSize(getScaledFontSize());
+            renderer.applyTheme(prefs);
+        }
+
+        private int getScaledFontSize() {
+            float density = getResources().getDisplayMetrics().density;
+            int scaled = Math.round(prefs.getFontSize() * (density >= 3.0f ? 1.4f : 1.1f));
+            return Math.max(16, scaled);
         }
 
         @Override
         public void onSharedPreferenceChanged(SharedPreferences sp, String key) {
             boolean fontChanged = prefs.load(sp);
+            renderer.applyTheme(prefs);
             if (fontChanged && width > 0 && height > 0) {
                 resizeMatrix();
             }
@@ -74,7 +83,7 @@ public class MatrixRainWallpaperService extends WallpaperService {
 
             if (event.getAction() == MotionEvent.ACTION_DOWN || event.getAction() == MotionEvent.ACTION_MOVE) {
                 int x = (int) event.getX();
-                int fontSize = prefs.getFontSize();
+                int fontSize = getScaledFontSize();
                 if (fontSize > 0) {
                     int col = x / fontSize;
                     simulation.deflect(col, prefs.isGoldEnabled());
@@ -115,7 +124,7 @@ public class MatrixRainWallpaperService extends WallpaperService {
 
         private void resizeMatrix() {
             if (width > 0 && height > 0) {
-                int fontSize = prefs.getFontSize();
+                int fontSize = getScaledFontSize();
                 renderer.updateFontSize(fontSize);
                 renderer.resize(width, height);
 

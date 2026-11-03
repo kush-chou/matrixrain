@@ -20,12 +20,18 @@
         android:paddingLeft="24dp"
         android:paddingRight="24dp">
 
-        <!-- Top Header Terminal Style -->
+        <!-- Top Header Terminal Style with Scrim -->
         <LinearLayout
-            android:layout_width="match_parent"
+            android:id="@+id/header_box"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_marginTop="20dp">
+            android:background="@drawable/bg_header_scrim"
+            android:paddingLeft="16dp"
+            android:paddingRight="20dp"
+            android:paddingTop="12dp"
+            android:paddingBottom="12dp"
+            android:layout_marginTop="16dp">
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -39,9 +45,9 @@
                     android:layout_height="wrap_content"
                     android:text="&gt;_ "
                     android:textColor="#00FF66"
-                    android:textSize="32sp"
+                    android:textSize="30sp"
                     android:textStyle="bold"
-                    android:fontFamily="monospace" />
+                    android:fontFamily="@font/share_tech_mono" />
 
                 <TextView
                     android:id="@+id/header_title"
@@ -49,20 +55,22 @@
                     android:layout_height="wrap_content"
                     android:text="matrixrain"
                     android:textColor="#FFFFFF"
-                    android:textSize="32sp"
+                    android:textSize="30sp"
                     android:textStyle="bold"
-                    android:fontFamily="monospace" />
+                    android:fontFamily="@font/share_tech_mono" />
             </LinearLayout>
 
             <TextView
                 android:id="@+id/header_tagline"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="AMOLED • 0% Standby Drain • 100% Free"
+                android:layout_marginTop="4dp"
+                android:text="AMOLED"
                 android:textColor="#648a72"
                 android:textSize="13sp"
-                android:fontFamily="monospace" />
+                android:letterSpacing="0.15"
+                android:fontFamily="@font/share_tech_mono" />
+
         </LinearLayout>
 
         <!-- Flexible Spacer -->
@@ -87,7 +95,7 @@
                 android:textColor="#FFFFFF"
                 android:textSize="15sp"
                 android:textStyle="bold"
-                android:fontFamily="monospace"
+                android:fontFamily="@font/share_tech_mono"
                 android:background="@drawable/bg_cyber_button"
                 android:stateListAnimator="@null" />
 
@@ -101,7 +109,7 @@
                 android:textColor="#FFFFFF"
                 android:textSize="15sp"
                 android:textStyle="bold"
-                android:fontFamily="monospace"
+                android:fontFamily="@font/share_tech_mono"
                 android:background="@drawable/bg_cyber_button"
                 android:stateListAnimator="@null" />
         </LinearLayout>
