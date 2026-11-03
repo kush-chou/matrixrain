@@ -1,115 +1,202 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/root_settings"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#000000"
-    android:padding="16dp">
+    android:fillViewport="true">
 
     <LinearLayout
+        android:id="@+id/settings_content_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:paddingLeft="24dp"
+        android:paddingRight="24dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="32dp">
 
-        <TextView
+        <!-- Glowing Terminal Header -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Customization"
-            android:textColor="#00FF00"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:layout_marginBottom="16dp"/>
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginTop="16dp"
+            android:layout_marginBottom="24dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="&gt;_ "
+                android:textColor="#00FF66"
+                android:textSize="26sp"
+                android:textStyle="bold"
+                android:fontFamily="monospace" />
+
+            <TextView
+                android:id="@+id/settings_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Customization"
+                android:textColor="#00FF66"
+                android:textSize="26sp"
+                android:textStyle="bold"
+                android:fontFamily="monospace"
+                android:shadowColor="#8000FF66"
+                android:shadowDx="0"
+                android:shadowDy="0"
+                android:shadowRadius="12" />
+        </LinearLayout>
 
         <!-- Density -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Rain Density (Text Size)"
-            android:textColor="#FFFFFF" />
+            android:text="Rain Density (Glyph Size)"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            android:fontFamily="monospace" />
+
         <SeekBar
             android:id="@+id/seekbar_density"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:max="50"
             android:progress="16"
-            android:layout_marginBottom="16dp"/>
+            android:progressTint="#00FF66"
+            android:thumbTint="#00FF66"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="20dp" />
 
         <!-- Speed -->
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Rain Speed"
-            android:textColor="#FFFFFF" />
+            android:text="Cascade Speed"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            android:fontFamily="monospace" />
+
         <SeekBar
             android:id="@+id/seekbar_speed"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:max="100"
             android:progress="30"
-            android:layout_marginBottom="16dp"/>
+            android:progressTint="#00FF66"
+            android:thumbTint="#00FF66"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="24dp" />
+
+        <!-- Section Divider -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#2000FF66"
+            android:layout_marginBottom="20dp" />
 
         <!-- Features -->
-        <Switch
+        <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/switch_virus"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Red 'Virus' Drops"
             android:textColor="#FFFFFF"
+            android:fontFamily="monospace"
             android:checked="true"
-            android:layout_marginBottom="12dp"/>
+            app:thumbTint="#00FF66"
+            app:trackTint="#4000FF66"
+            android:paddingTop="6dp"
+            android:paddingBottom="6dp"
+            android:layout_marginBottom="12dp" />
 
-        <Switch
+        <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/switch_gold"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Gold 'Neo' Drops"
             android:textColor="#FFFFFF"
+            android:fontFamily="monospace"
             android:checked="true"
-            android:layout_marginBottom="12dp"/>
+            app:thumbTint="#00FF66"
+            app:trackTint="#4000FF66"
+            android:paddingTop="6dp"
+            android:paddingBottom="6dp"
+            android:layout_marginBottom="12dp" />
 
-        <Switch
+        <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/switch_messages"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Hidden Messages"
             android:textColor="#FFFFFF"
+            android:fontFamily="monospace"
             android:checked="true"
-            android:layout_marginBottom="12dp"/>
+            app:thumbTint="#00FF66"
+            app:trackTint="#4000FF66"
+            android:paddingTop="6dp"
+            android:paddingBottom="6dp"
+            android:layout_marginBottom="12dp" />
 
-        <Switch
+        <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/switch_depth"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Background Depth Layer"
             android:textColor="#FFFFFF"
+            android:fontFamily="monospace"
             android:checked="true"
-            android:layout_marginBottom="12dp"/>
+            app:thumbTint="#00FF66"
+            app:trackTint="#4000FF66"
+            android:paddingTop="6dp"
+            android:paddingBottom="6dp"
+            android:layout_marginBottom="12dp" />
 
-        <Switch
+        <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/switch_glitch"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Glitch Effects"
             android:textColor="#FFFFFF"
+            android:fontFamily="monospace"
             android:checked="true"
-            android:layout_marginBottom="12dp"/>
+            app:thumbTint="#00FF66"
+            app:trackTint="#4000FF66"
+            android:paddingTop="6dp"
+            android:paddingBottom="6dp"
+            android:layout_marginBottom="12dp" />
 
-        <Switch
+        <androidx.appcompat.widget.SwitchCompat
             android:id="@+id/switch_touch"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Touch Interaction"
             android:textColor="#FFFFFF"
+            android:fontFamily="monospace"
             android:checked="true"
-            android:layout_marginBottom="12dp"/>
+            app:thumbTint="#00FF66"
+            app:trackTint="#4000FF66"
+            android:paddingTop="6dp"
+            android:paddingBottom="6dp"
+            android:layout_marginBottom="16dp" />
 
-        <Button
+        <!-- Apply Button -->
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/btn_apply"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="56dp"
             android:text="Apply Settings"
-            android:backgroundTint="#00FF00"
+            android:textAllCaps="false"
             android:textColor="#000000"
-            android:layout_marginTop="20dp"/>
+            android:textSize="16sp"
+            android:textStyle="bold"
+            android:fontFamily="monospace"
+            android:background="@drawable/bg_apply_button"
+            android:stateListAnimator="@null"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="24dp" />
 
     </LinearLayout>
 </ScrollView>

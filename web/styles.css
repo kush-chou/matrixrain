@@ -1,12 +1,9 @@
-/* matrixrain — Pure Minimalist Stylesheet */
 :root {
   --matrix-green: #00ff66;
-  --matrix-dim: #003b15;
   --bg-black: #000000;
   --text-main: #e8faed;
-  --text-muted: #5b7e68;
-  --font-mono: "SF Mono", "Fira Code", "Cascadia Code", "Roboto Mono", "Courier New", monospace;
-  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --text-muted: #648a72;
+  --font-mono: "Consolas", "Monaco", "Menlo", "SF Mono", "Courier New", monospace;
 }
 
 * {
@@ -21,13 +18,12 @@ html, body {
   width: 100vw;
   height: 100vh;
   overflow: hidden;
-  background-color: var(--bg-black);
+  background-color: #000000;
   color: var(--text-main);
   font-family: var(--font-mono);
   position: relative;
 }
 
-/* Fullscreen Canvas */
 #matrix-canvas {
   position: fixed;
   top: 0;
@@ -36,10 +32,10 @@ html, body {
   height: 100vh;
   display: block;
   z-index: 1;
-  background: var(--bg-black);
+  background-color: #000000;
 }
 
-/* HUD Top Header */
+/* Top HUD Header */
 .hud-top {
   position: fixed;
   top: 0;
@@ -50,8 +46,9 @@ html, body {
   justify-content: space-between;
   align-items: center;
   padding: 1.25rem 2rem;
-  transition: opacity 0.4s ease, transform 0.4s ease;
   pointer-events: auto;
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0) 100%);
+  transition: opacity 0.4s ease, transform 0.4s ease;
 }
 
 .hud-brand {
@@ -63,7 +60,7 @@ html, body {
 
 .prompt {
   color: var(--matrix-green);
-  font-size: 1.15rem;
+  font-size: 1.2rem;
   font-weight: 700;
   text-shadow: 0 0 10px rgba(0, 255, 102, 0.7);
 }
@@ -73,47 +70,53 @@ html, body {
   font-size: 1.15rem;
   font-weight: 600;
   letter-spacing: -0.3px;
-  opacity: 0.95;
 }
 
 .hud-actions {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.65rem;
 }
 
 .hud-btn {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.45rem;
   padding: 0.45rem 0.95rem;
-  background: rgba(10, 20, 14, 0.65);
+  background: rgba(8, 16, 11, 0.75);
   border: 1px solid rgba(0, 255, 102, 0.28);
   border-radius: 9999px;
   color: var(--text-main);
   text-decoration: none;
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   font-family: var(--font-mono);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
 }
 
 .hud-btn:hover {
-  background: rgba(0, 255, 102, 0.12);
+  background: rgba(0, 255, 102, 0.15);
   border-color: var(--matrix-green);
   color: #ffffff;
-  box-shadow: 0 0 14px rgba(0, 255, 102, 0.35);
+  box-shadow: 0 0 12px rgba(0, 255, 102, 0.35);
   transform: translateY(-1px);
 }
 
 .hud-icon {
-  width: 15px;
-  height: 15px;
+  width: 15px !important;
+  height: 15px !important;
+  min-width: 15px !important;
+  max-width: 15px !important;
+  min-height: 15px !important;
+  max-height: 15px !important;
   flex-shrink: 0;
+  display: inline-block;
+  vertical-align: middle;
 }
 
-/* HUD Bottom Bar */
+/* Bottom HUD Bar */
 .hud-bottom {
   position: fixed;
   bottom: 0;
@@ -124,8 +127,9 @@ html, body {
   justify-content: space-between;
   align-items: center;
   padding: 1.25rem 2rem;
-  transition: opacity 0.4s ease, transform 0.4s ease;
   pointer-events: auto;
+  background: linear-gradient(0deg, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0) 100%);
+  transition: opacity 0.4s ease, transform 0.4s ease;
 }
 
 .hud-themes {
@@ -135,10 +139,10 @@ html, body {
 }
 
 .theme-dot {
-  width: 15px;
-  height: 15px;
+  width: 14px;
+  height: 14px;
   border-radius: 50%;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.25);
   background-color: var(--dot-color);
   cursor: pointer;
   opacity: 0.45;
@@ -174,7 +178,7 @@ html, body {
 
 .hud-hints {
   color: var(--text-muted);
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   display: flex;
   align-items: center;
   gap: 0.5rem;
@@ -182,7 +186,7 @@ html, body {
 }
 
 .hud-hints .sep {
-  opacity: 0.4;
+  opacity: 0.35;
 }
 
 .hud-tools {
@@ -191,12 +195,12 @@ html, body {
 }
 
 .hud-icon-btn {
-  background: rgba(10, 20, 14, 0.65);
+  background: rgba(8, 16, 11, 0.75);
   border: 1px solid rgba(0, 255, 102, 0.25);
   border-radius: 6px;
   color: var(--text-muted);
   font-size: 0.9rem;
-  padding: 0.35rem 0.65rem;
+  padding: 0.3rem 0.6rem;
   cursor: pointer;
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
@@ -227,7 +231,6 @@ body.hud-hidden .hud-bottom {
   transform: translateY(8px);
 }
 
-/* Responsive adjustments for mobile devices */
 @media (max-width: 768px) {
   .hud-top {
     padding: 1rem 1.25rem;
@@ -235,25 +238,19 @@ body.hud-hidden .hud-bottom {
     gap: 0.85rem;
     align-items: flex-start;
   }
-
   .hud-actions {
     width: 100%;
-    justify-content: flex-start;
     flex-wrap: wrap;
-    gap: 0.5rem;
+    gap: 0.45rem;
   }
-
   .hud-btn {
     padding: 0.35rem 0.75rem;
-    font-size: 0.78rem;
+    font-size: 0.75rem;
   }
-
   .hud-bottom {
     padding: 1rem 1.25rem;
-    flex-wrap: wrap;
     gap: 0.75rem;
   }
-
   .hud-hints {
     display: none;
   }

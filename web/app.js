@@ -1,294 +1,338 @@
 /**
- * matrixrain — Pure Minimalist Living Rain Engine
- * 
- * Discrete Grid Tiling & Razor-Sharp Glyphs:
- * - Full canvas wipe (#000000) every frame prevents ghost trails and blur.
- * - Monospace half-width Katakana + digits are locked to integer grid cells.
- * - Zero vertical overlap, zero horizontal crowding.
- * - Auto-hiding HUD for an uninterrupted zen screensaver experience.
+ * Exact Faithful Implementation of MatrixRainWallpaperService.java
+ * Directly matches the Android live wallpaper engine.
  */
+const canvas = document.getElementById('matrix-canvas');
+const ctx = canvas.getContext('2d');
 
-// Authentic Half-Width Katakana, Clean Digits & Matrix Runes
-const KATAKANA = 'ｧｱｨｲｩｳｪｴｫｵｶｷｸｹｺｻｼｽｾｿﾀﾁﾂﾃﾄﾅﾆﾇﾈﾉﾊﾋﾌﾍﾎﾏﾐﾑﾒﾓﾔﾕﾖﾗﾘﾙﾚﾛﾜｦﾝ';
-const DIGITS = '0123456789';
-const SYMBOLS = ':・=*+-<>¦|~';
-const GLYPHS = (KATAKANA + DIGITS + SYMBOLS).split('');
+// Offscreen persistent buffer canvas for authentic phosphorescent decay
+let bufferCanvas = document.createElement('canvas');
+let bufferCtx = bufferCanvas.getContext('2d');
 
-// Themes Palette
+const hiddenWords = ["MATRIX", "SYSTEM", "HACK", "WAKE UP", "NEO"];
+
+// Palette configurations based on Android paints
 const THEMES = {
   classic: {
-    name: 'Classic Green',
-    headColor: '#FFFFFF',
-    glowColor: 'rgba(0, 255, 102, 0.85)',
-    leadRgb: [255, 255, 255],
-    neckRgb: [120, 255, 170],
-    bodyRgb: [0, 255, 102],
-    tailRgb: [0, 140, 50]
+    text: '#00FF00',
+    bg: '#004400',
+    head: '#EEFFEE',
+    glow: '#00FF00',
+    virus: '#FF0000',
+    gold: '#FFD700'
   },
   cyan: {
-    name: 'Trinity Cyan',
-    headColor: '#FFFFFF',
-    glowColor: 'rgba(0, 229, 255, 0.85)',
-    leadRgb: [255, 255, 255],
-    neckRgb: [160, 245, 255],
-    bodyRgb: [0, 229, 255],
-    tailRgb: [0, 130, 170]
+    text: '#00E5FF',
+    bg: '#003344',
+    head: '#EEFFFF',
+    glow: '#00E5FF',
+    virus: '#FF0055',
+    gold: '#FFD700'
   },
   crimson: {
-    name: 'Matrix Red',
-    headColor: '#FFFFFF',
-    glowColor: 'rgba(255, 51, 68, 0.85)',
-    leadRgb: [255, 255, 255],
-    neckRgb: [255, 160, 170],
-    bodyRgb: [255, 51, 68],
-    tailRgb: [160, 20, 35]
+    text: '#FF3344',
+    bg: '#440008',
+    head: '#FFEEF0',
+    glow: '#FF3344',
+    virus: '#00FF66',
+    gold: '#FFD700'
   },
   amber: {
-    name: 'Zion Amber',
-    headColor: '#FFFFFF',
-    glowColor: 'rgba(255, 183, 0, 0.85)',
-    leadRgb: [255, 255, 255],
-    neckRgb: [255, 230, 160],
-    bodyRgb: [255, 183, 0],
-    tailRgb: [170, 110, 0]
+    text: '#FFB700',
+    bg: '#443000',
+    head: '#FFFFEE',
+    glow: '#FFB700',
+    virus: '#FF2200',
+    gold: '#00FF66'
   },
   violet: {
-    name: 'Cyber Violet',
-    headColor: '#FFFFFF',
-    glowColor: 'rgba(213, 0, 249, 0.85)',
-    leadRgb: [255, 255, 255],
-    neckRgb: [245, 160, 255],
-    bodyRgb: [213, 0, 249],
-    tailRgb: [130, 0, 160]
+    text: '#D500F9',
+    bg: '#350040',
+    head: '#FAEEFF',
+    glow: '#D500F9',
+    virus: '#00E5FF',
+    gold: '#FFD700'
   },
   monochrome: {
-    name: 'Monochrome White',
-    headColor: '#FFFFFF',
-    glowColor: 'rgba(255, 255, 255, 0.75)',
-    leadRgb: [255, 255, 255],
-    neckRgb: [230, 230, 230],
-    bodyRgb: [180, 180, 180],
-    tailRgb: [90, 90, 90]
+    text: '#BBBBBB',
+    bg: '#333333',
+    head: '#FFFFFF',
+    glow: '#FFFFFF',
+    virus: '#FF3344',
+    gold: '#00FF66'
   }
 };
-
 const THEME_KEYS = Object.keys(THEMES);
 
-// Simulation State
 const state = {
   theme: 'classic',
-  fontSize: 18,
-  cellWidth: 22,
-  cellHeight: 24,
-  columns: [],
+  fontSize: 16,
+  columnSize: 0,
+  width: 0,
+  height: 0,
+  dropY: [],
+  speeds: [],
+  frameCounts: [],
+  previousChars: [],
+  columnType: [], // 0=Normal, 1=Background depth, 2=Virus, 3=Gold
+  wordActiveIndex: [],
+  assignedWord: [],
   ripples: [],
   paused: false
 };
 
-const canvas = document.getElementById('matrix-canvas');
-const ctx = canvas.getContext('2d');
-
-function randomGlyph() {
-  return GLYPHS[Math.floor(Math.random() * GLYPHS.length)];
+/**
+ * Exact character generator from MatrixRainWallpaperService.java:
+ * 60% Halfwidth Katakana (0xFF66 to 0xFF9D)
+ * 25% Digits ('0' to '9')
+ * 15% ASCII symbols (0x21 to 0x7E)
+ */
+function getRandomMatrixChar() {
+  const type = Math.random() * 100;
+  if (type < 60) {
+    return String.fromCharCode(0xFF66 + Math.floor(Math.random() * (0xFF9D - 0xFF66)));
+  } else if (type < 85) {
+    return String.fromCharCode(48 + Math.floor(Math.random() * 10));
+  } else {
+    return String.fromCharCode(0x21 + Math.floor(Math.random() * 90));
+  }
 }
 
-function initGrid() {
-  const width = window.innerWidth;
-  const height = window.innerHeight;
-  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+function initColumn(i, randomY) {
+  const maxRows = Math.floor(state.height / state.fontSize);
+  state.dropY[i] = randomY ? Math.floor(Math.random() * maxRows) : 0;
 
-  canvas.width = Math.floor(width * dpr);
-  canvas.height = Math.floor(height * dpr);
-  canvas.style.width = `${width}px`;
-  canvas.style.height = `${height}px`;
+  const roll = Math.random();
+  if (roll > 0.98) {
+    state.columnType[i] = 2; // Virus (Red)
+    state.speeds[i] = Math.floor(Math.random() * 2) + 1;
+  } else if (roll > 0.96) {
+    state.columnType[i] = 3; // Gold
+    state.speeds[i] = Math.floor(Math.random() * 3) + 2;
+  } else if (roll > 0.60) {
+    state.columnType[i] = 1; // Background depth (Dim dark green)
+    state.speeds[i] = Math.floor(Math.random() * 2) + 3;
+  } else {
+    state.columnType[i] = 0; // Standard foreground (Bright green)
+    state.speeds[i] = Math.floor(Math.random() * 2) + 1;
+  }
+
+  state.frameCounts[i] = state.speeds[i];
+  state.previousChars[i] = getRandomMatrixChar();
+
+  state.wordActiveIndex[i] = -1;
+  if (!randomY && state.columnType[i] === 0 && Math.random() < 0.04) {
+    state.assignedWord[i] = hiddenWords[Math.floor(Math.random() * hiddenWords.length)];
+    state.wordActiveIndex[i] = 0;
+  }
+}
+
+function resizeMatrix() {
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  state.width = window.innerWidth;
+  state.height = window.innerHeight;
+
+  canvas.width = Math.floor(state.width * dpr);
+  canvas.height = Math.floor(state.height * dpr);
+  canvas.style.width = `${state.width}px`;
+  canvas.style.height = `${state.height}px`;
 
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-  // Dynamic cell geometry for legibility
-  state.fontSize = width < 768 ? 16 : 18;
-  state.cellWidth = width < 768 ? 18 : 22;
-  state.cellHeight = width < 768 ? 20 : 24;
+  bufferCanvas.width = state.width;
+  bufferCanvas.height = state.height;
+  bufferCtx.fillStyle = '#000000';
+  bufferCtx.fillRect(0, 0, state.width, state.height);
 
-  const numCols = Math.floor(width / state.cellWidth);
-  const totalRows = Math.ceil(height / state.cellHeight);
-  state.columns = [];
+  state.fontSize = state.width < 768 ? 14 : 16;
+  state.columnSize = Math.floor(state.width / state.fontSize);
 
-  for (let i = 0; i < numCols; i++) {
-    const streamLen = 14 + Math.floor(Math.random() * 22);
-    state.columns.push({
-      x: i * state.cellWidth + (state.cellWidth / 2),
-      colIndex: i,
-      headRow: Math.floor(Math.random() * -totalRows),
-      rowProgress: 0,
-      // Fall speed in rows per second (discrete grid steps)
-      rowsPerSec: 10 + Math.random() * 16,
-      length: streamLen,
-      chars: Array.from({ length: streamLen }, () => randomGlyph()),
-      leadChar: randomGlyph()
-    });
+  state.dropY = new Array(state.columnSize);
+  state.speeds = new Array(state.columnSize);
+  state.frameCounts = new Array(state.columnSize);
+  state.previousChars = new Array(state.columnSize);
+  state.columnType = new Array(state.columnSize);
+  state.wordActiveIndex = new Array(state.columnSize);
+  state.assignedWord = new Array(state.columnSize);
+
+  for (let i = 0; i < state.columnSize; i++) {
+    initColumn(i, true);
   }
 }
 
-window.addEventListener('resize', initGrid);
-initGrid();
+window.addEventListener('resize', resizeMatrix);
+resizeMatrix();
 
-// Render Loop
-let lastTime = 0;
+// Consistent Frame Loop matching Android Handler.postDelayed(drawRunner, 33)
+function drawFrame() {
+  if (state.paused) return;
 
-function render(timestamp) {
-  if (!lastTime) lastTime = timestamp;
-  const dt = Math.min((timestamp - lastTime) / 1000, 0.1);
-  lastTime = timestamp;
+  const currentTheme = THEMES[state.theme];
 
-  if (!state.paused) {
-    const width = window.innerWidth;
-    const height = window.innerHeight;
-    const totalRows = Math.ceil(height / state.cellHeight);
-    const theme = THEMES[state.theme];
+  // 1. Phosphor Decay Wipe on buffer matching Android setAlpha(10) (10/255 ~= 0.039)
+  bufferCtx.fillStyle = 'rgba(0, 0, 0, 0.038)';
+  bufferCtx.fillRect(0, 0, state.width, state.height);
 
-    // 1. Full Canvas Clear (Pure OLED Black)
-    ctx.fillStyle = '#000000';
-    ctx.fillRect(0, 0, width, height);
+  bufferCtx.font = `${state.fontSize}px "Consolas", "Monaco", "Menlo", monospace`;
+  bufferCtx.textBaseline = 'top';
 
-    // 2. Process Ripples
-    for (let r = state.ripples.length - 1; r >= 0; r--) {
-      const rip = state.ripples[r];
-      rip.radius += 320 * dt;
-      rip.alpha -= 1.2 * dt;
+  // 2. Process Columns
+  for (let i = 0; i < state.columnSize; i++) {
+    state.frameCounts[i]--;
 
-      if (rip.alpha <= 0) {
-        state.ripples.splice(r, 1);
-        continue;
-      }
-
-      ctx.save();
-      ctx.beginPath();
-      ctx.arc(rip.x, rip.y, rip.radius, 0, Math.PI * 2);
-      ctx.strokeStyle = `rgba(${theme.bodyRgb[0]}, ${theme.bodyRgb[1]}, ${theme.bodyRgb[2]}, ${(rip.alpha * 0.5).toFixed(2)})`;
-      ctx.lineWidth = 1.5;
-      ctx.stroke();
-      ctx.restore();
+    // Occasional In-Place Glitch
+    if (Math.random() < 0.015) {
+      const glitchY = Math.floor(Math.random() * (state.height / state.fontSize));
+      let glitchColor = state.columnType[i] === 1 ? currentTheme.bg : currentTheme.text;
+      if (state.columnType[i] === 2) glitchColor = currentTheme.virus;
+      bufferCtx.fillStyle = glitchColor;
+      bufferCtx.fillText(getRandomMatrixChar(), i * state.fontSize, glitchY * state.fontSize);
     }
 
-    // 3. Render Columns in Discrete Cells
-    ctx.font = `700 ${state.fontSize}px "SF Mono", "Consolas", "Menlo", "Courier New", monospace`;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
+    if (state.frameCounts[i] <= 0) {
+      state.frameCounts[i] = state.speeds[i];
 
-    for (let i = 0; i < state.columns.length; i++) {
-      const col = state.columns[i];
+      const x = i * state.fontSize;
+      const y = state.dropY[i] * state.fontSize;
 
-      // Discrete step advance
-      col.rowProgress += col.rowsPerSec * dt;
-      if (col.rowProgress >= 1) {
-        const step = Math.floor(col.rowProgress);
-        col.rowProgress -= step;
-        col.headRow += step;
+      // Paint previous character in body color
+      let bodyColor = currentTheme.text;
+      if (state.columnType[i] === 1) bodyColor = currentTheme.bg;
+      else if (state.columnType[i] === 2) bodyColor = currentTheme.virus;
+      else if (state.columnType[i] === 3) bodyColor = currentTheme.gold;
 
-        // Shift characters and introduce new lead character
-        for (let s = 0; s < step; s++) {
-          col.chars.pop();
-          col.chars.unshift(col.leadChar);
-          col.leadChar = randomGlyph();
+      bufferCtx.fillStyle = bodyColor;
+      bufferCtx.fillText(state.previousChars[i], x, y);
+
+      state.dropY[i]++;
+
+      if (state.dropY[i] * state.fontSize > state.height) {
+        if (Math.random() > 0.95) {
+          initColumn(i, false);
         }
-      }
-
-      // In-place mutation (living code shimmer)
-      if (Math.random() < 0.12) {
-        const mutateIndex = Math.floor(Math.random() * col.chars.length);
-        col.chars[mutateIndex] = randomGlyph();
-      }
-
-      // Check collision with ripples
-      for (let r = 0; r < state.ripples.length; r++) {
-        const rip = state.ripples[r];
-        const dist = Math.abs(col.x - rip.x);
-        if (Math.abs(dist - rip.radius) < 25) {
-          col.headRow -= 0.5;
-          col.chars[0] = '⚡';
-        }
-      }
-
-      // Reset when fully below screen
-      if (col.headRow - col.length > totalRows + 2) {
-        col.headRow = Math.floor(Math.random() * -15) - 2;
-        col.rowsPerSec = 10 + Math.random() * 16;
-        col.length = 14 + Math.floor(Math.random() * 22);
-        col.chars = Array.from({ length: col.length }, () => randomGlyph());
-      }
-
-      // Render glyphs at integer row positions
-      for (let j = 0; j < col.length; j++) {
-        const row = col.headRow - j;
-        if (row < 0 || row > totalRows) continue;
-
-        const charY = (row * state.cellHeight) + (state.cellHeight / 2);
-        const char = (j === 0) ? col.leadChar : col.chars[j];
-        const normalizedPos = j / col.length;
-
-        if (j === 0) {
-          // Leading Head Character (Pure White with crisp phosphor bloom)
-          ctx.save();
-          ctx.fillStyle = theme.headColor;
-          ctx.shadowBlur = 8;
-          ctx.shadowColor = theme.glowColor;
-          ctx.fillText(char, col.x, charY);
-          ctx.restore();
-        } else if (j <= 2) {
-          // Upper Neck (High Brightness Accent)
-          const alpha = 0.95 - (j * 0.08);
-          ctx.fillStyle = `rgba(${theme.neckRgb[0]}, ${theme.neckRgb[1]}, ${theme.neckRgb[2]}, ${alpha.toFixed(2)})`;
-          ctx.fillText(char, col.x, charY);
-        } else if (normalizedPos < 0.6) {
-          // Mid Body (Readable Theme Color)
-          const alpha = 0.80 - ((normalizedPos - 0.15) * 0.65);
-          ctx.fillStyle = `rgba(${theme.bodyRgb[0]}, ${theme.bodyRgb[1]}, ${theme.bodyRgb[2]}, ${alpha.toFixed(2)})`;
-          ctx.fillText(char, col.x, charY);
+      } else {
+        let newChar;
+        if (state.wordActiveIndex[i] >= 0) {
+          newChar = state.assignedWord[i].charAt(state.wordActiveIndex[i]);
+          state.wordActiveIndex[i]++;
+          if (state.wordActiveIndex[i] >= state.assignedWord[i].length) {
+            state.wordActiveIndex[i] = -1;
+          }
         } else {
-          // Lower Tail (Decaying phosphor fading cleanly into pure black)
-          const alpha = Math.max(0.06, (1.0 - normalizedPos) * 0.70);
-          ctx.fillStyle = `rgba(${theme.tailRgb[0]}, ${theme.tailRgb[1]}, ${theme.tailRgb[2]}, ${alpha.toFixed(2)})`;
-          ctx.fillText(char, col.x, charY);
+          newChar = getRandomMatrixChar();
         }
+
+        // Draw new head with glow
+        let headColor = currentTheme.head;
+        let headGlow = currentTheme.glow;
+        if (state.columnType[i] === 2) { headColor = currentTheme.virus; headGlow = currentTheme.virus; }
+        else if (state.columnType[i] === 3) { headColor = currentTheme.gold; headGlow = currentTheme.gold; }
+        else if (state.columnType[i] === 1) { headColor = currentTheme.bg; headGlow = 'transparent'; }
+
+        bufferCtx.save();
+        bufferCtx.fillStyle = headColor;
+        if (state.columnType[i] !== 1) {
+          bufferCtx.shadowColor = headGlow;
+          bufferCtx.shadowBlur = 8;
+        }
+        bufferCtx.fillText(newChar, x, state.dropY[i] * state.fontSize);
+        bufferCtx.restore();
+
+        state.previousChars[i] = newChar;
       }
     }
   }
 
-  requestAnimationFrame(render);
+  // 3. Render buffer onto main screen
+  ctx.clearRect(0, 0, state.width, state.height);
+  ctx.drawImage(bufferCanvas, 0, 0);
+
+  // 4. Draw Ripples on top
+  for (let r = state.ripples.length - 1; r >= 0; r--) {
+    const rip = state.ripples[r];
+    rip.radius += 8;
+    rip.alpha -= 0.04;
+    if (rip.alpha <= 0) {
+      state.ripples.splice(r, 1);
+      continue;
+    }
+    ctx.beginPath();
+    ctx.arc(rip.x, rip.y, rip.radius, 0, Math.PI * 2);
+    ctx.strokeStyle = `rgba(0, 255, 102, ${rip.alpha * 0.6})`;
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+  }
 }
 
-requestAnimationFrame(render);
+let lastTime = 0;
+const frameInterval = 30; // 30ms matching Android WallpaperService drawDelay
 
-// Interactive Radial Ripple
-function triggerRipple(x, y) {
-  state.ripples.push({
-    x,
-    y,
-    radius: 12,
-    alpha: 1.0
-  });
+function loop(timestamp) {
+  if (!lastTime) lastTime = timestamp;
+  const elapsed = timestamp - lastTime;
 
-  const clickCol = Math.floor(x / state.cellWidth);
-  for (let offset = -3; offset <= 3; offset++) {
-    const col = state.columns[clickCol + offset];
-    if (col) {
-      col.headRow -= (4 - Math.abs(offset)) * 0.8;
-      for (let k = 0; k < 3; k++) {
-        col.chars[k] = randomGlyph();
-      }
+  if (elapsed >= frameInterval) {
+    lastTime = timestamp - (elapsed % frameInterval);
+    drawFrame();
+  }
+
+  requestAnimationFrame(loop);
+}
+requestAnimationFrame(loop);
+
+// Glide / Drag Column Trigger directly from Android WallpaperService.onTouchEvent
+let isPointerDown = false;
+let lastPointerX = null;
+
+function triggerAtX(currentX) {
+  const currentCol = Math.floor(currentX / state.fontSize);
+  let startCol = currentCol;
+  let endCol = currentCol;
+
+  if (lastPointerX !== null) {
+    const prevCol = Math.floor(lastPointerX / state.fontSize);
+    startCol = Math.min(prevCol, currentCol);
+    endCol = Math.max(prevCol, currentCol);
+  }
+
+  for (let c = startCol; c <= endCol; c++) {
+    if (c >= 0 && c < state.columnSize) {
+      state.dropY[c] = 0;
+      state.speeds[c] = 1;
+      state.frameCounts[c] = 0;
+      state.previousChars[c] = getRandomMatrixChar();
+      // 5% chance Gold stream roll directly matching Android onTouchEvent
+      state.columnType[c] = (Math.random() < 0.05) ? 3 : 0;
     }
   }
+
+  lastPointerX = currentX;
 }
 
 window.addEventListener('pointerdown', (e) => {
-  // Avoid rippling when clicking HUD buttons
   if (e.target.closest('.hud-top') || e.target.closest('.hud-bottom')) return;
-  triggerRipple(e.clientX, e.clientY);
+  isPointerDown = true;
+  triggerAtX(e.clientX);
 });
 
-// Zen Screensaver Auto-Hide (3.5s inactivity)
-let hideTimer = null;
+window.addEventListener('pointermove', (e) => {
+  if (!isPointerDown) return;
+  if (e.target.closest('.hud-top') || e.target.closest('.hud-bottom')) return;
+  triggerAtX(e.clientX);
+});
 
+window.addEventListener('pointerup', () => {
+  isPointerDown = false;
+  lastPointerX = null;
+});
+
+window.addEventListener('pointercancel', () => {
+  isPointerDown = false;
+  lastPointerX = null;
+});
+
+// Auto-Hide HUD for Pure Screensaver Experience
+let hideTimer = null;
 function resetInactivityTimer() {
   document.body.classList.remove('hud-hidden');
   clearTimeout(hideTimer);
@@ -302,7 +346,7 @@ function resetInactivityTimer() {
 });
 resetInactivityTimer();
 
-// Theme Selection
+// Theme Picker
 function setTheme(themeKey) {
   if (!THEMES[themeKey]) return;
   state.theme = themeKey;
@@ -312,12 +356,10 @@ function setTheme(themeKey) {
 }
 
 document.querySelectorAll('.theme-dot').forEach((dot) => {
-  dot.addEventListener('click', () => {
-    setTheme(dot.dataset.theme);
-  });
+  dot.addEventListener('click', () => setTheme(dot.dataset.theme));
 });
 
-// Keyboard Shortcuts: [Space] Pause, [T] Cycle Theme, [F] Fullscreen
+// Keyboard Shortcuts
 window.addEventListener('keydown', (e) => {
   if (e.key === ' ' || e.code === 'Space') {
     e.preventDefault();
@@ -342,6 +384,4 @@ function toggleFullscreen() {
     if (fullscreenBtn) fullscreenBtn.textContent = '⛶';
   }
 }
-if (fullscreenBtn) {
-  fullscreenBtn.addEventListener('click', toggleFullscreen);
-}
+if (fullscreenBtn) fullscreenBtn.addEventListener('click', toggleFullscreen);

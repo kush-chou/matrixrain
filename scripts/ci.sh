@@ -13,13 +13,14 @@ ET.parse('app/src/main/AndroidManifest.xml')
 print('✔ Android XML manifest validated successfully.')
 "
 
-# 2. Verify Web app & landing page files
+# 2. Verify Web app & landing page assets
 $PYTHON -c "
 import os
 assert os.path.exists('web/index.html'), 'web/index.html missing'
 assert os.path.exists('web/styles.css'), 'web/styles.css missing'
 assert os.path.exists('web/app.js'), 'web/app.js missing'
 assert os.path.exists('web/privacy.html'), 'web/privacy.html missing'
+assert os.path.exists('web/assets/og-preview.png'), 'web/assets/og-preview.png missing'
 print('✔ matrixrain.app web assets validated successfully.')
 "
 
@@ -30,9 +31,9 @@ assert os.path.exists('metadata/app.matrixrain.yml'), 'F-Droid metadata missing'
 assert os.path.exists('fastlane/metadata/android/en-US/full_description.txt'), 'Fastlane description missing'
 assert os.path.exists('fastlane/metadata/android/en-US/images/icon.png'), 'Store 512x512 icon missing'
 assert os.path.exists('fastlane/metadata/android/en-US/images/featureGraphic.png'), 'Feature graphic missing'
-assert os.path.exists('web/assets/og-preview.png'), 'OpenGraph image missing'
-assert os.path.exists('release.keystore'), 'Release keystore missing'
-print('✔ Store graphics, app icons, and release keystore validated successfully.')
+assert os.path.exists('fastlane/metadata/android/en-US/images/phoneScreenshots'), 'Phone screenshots directory missing'
+assert len(os.listdir('fastlane/metadata/android/en-US/images/phoneScreenshots')) > 0, 'Phone screenshots directory is empty'
+print('✔ Store graphics and Fastlane metadata validated successfully.')
 "
 
 echo "✔ All Matrix Rain CI verification checks passed!"
