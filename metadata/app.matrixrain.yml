@@ -14,14 +14,14 @@ RepoType: git
 Repo: https://github.com/kush-chou/matrixrain.git
 
 Builds:
-  - versionName: '1.0-foss'
+  - versionName: '1.0'
     versionCode: 1
     commit: 'v1.0.0'
     subdir: app
     gradle:
-      - assembleFdroidRelease
+      - assembleRelease
 
 AutoUpdateMode: Version
 UpdateCheckMode: Tags
-CurrentVersion: '1.0-foss'
+CurrentVersion: '1.0'
 CurrentVersionCode: 1

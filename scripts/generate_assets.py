@@ -2,7 +2,7 @@
 """
 Matrix Rain Asset Generator
 Generates high-resolution Android launcher mipmaps, Fastlane store graphics,
-Google Play feature graphics, Wear OS screenshots, and OpenGraph web assets.
+feature graphics, and OpenGraph web assets.
 """
 
 import math
@@ -59,7 +59,7 @@ def draw_matrix_rain_background(
             draw.text((x, y), char, font=font, fill=color)
 
 def generate_play_store_icon(output_path):
-    """512x512 High-Res App Icon for Google Play and Fastlane."""
+    """512x512 High-Res App Icon for Fastlane and App Stores."""
     size = (512, 512)
     img = Image.new("RGBA", size, (0, 0, 0, 255))
     draw = ImageDraw.Draw(img)
@@ -117,7 +117,7 @@ def generate_play_store_icon(output_path):
     print(f"✔ Generated Play Store Icon: {output_path} (512x512)")
 
 def generate_feature_graphic(output_path):
-    """1024x500 Feature Graphic for Google Play Console."""
+    """1024x500 Feature Graphic."""
     size = (1024, 500)
     img = Image.new("RGBA", size, (2, 5, 4, 255))
     draw = ImageDraw.Draw(img)
@@ -147,7 +147,7 @@ def generate_feature_graphic(output_path):
 
     # Subtitle
     sub_font = get_font(24)
-    draw.text((70, 215), "Digital Rain Live Wallpaper & Wear OS Face", font=sub_font, fill=(220, 240, 230, 255))
+    draw.text((70, 215), "Digital Rain Live Wallpaper for Android", font=sub_font, fill=(220, 240, 230, 255))
 
     # Feature Pills
     pills = ["0% Standby Drain", "True OLED Black", "120Hz ProMotion", "100% FOSS"]
@@ -161,51 +161,41 @@ def generate_feature_graphic(output_path):
         draw.text((px + 14, py + 8), pill, font=pill_font, fill=(200, 255, 220, 240))
         px += pw + 14
 
-    # Wear OS smart companion pill
-    wear_pill = "⌚ Google Pixel Watch & Galaxy Watch Ready"
-    wbbox = draw.textbbox((0, 0), wear_pill, font=pill_font)
-    wpw = wbbox[2] - wbbox[0] + 28
-    draw.rounded_rectangle([70, 335, 70 + wpw, 335 + 38], radius=8, fill=(0, 40, 30, 200), outline=(0, 229, 255, 180), width=1)
-    draw.text((84, 343), wear_pill, font=pill_font, fill=(0, 229, 255, 255))
+    # Extra highlight pill
+    extra_pill = "⚡ 100% Offline • Touch Interactive Shockwave"
+    ebbox = draw.textbbox((0, 0), extra_pill, font=pill_font)
+    epw = ebbox[2] - ebbox[0] + 28
+    draw.rounded_rectangle([70, 335, 70 + epw, 335 + 38], radius=8, fill=(0, 40, 30, 200), outline=(0, 229, 255, 180), width=1)
+    draw.text((84, 343), extra_pill, font=pill_font, fill=(0, 229, 255, 255))
 
-    # Right side: Watch Mockup Visual
-    watch_center = (830, 250)
-    watch_radius = 140
-    # Outer watch case
-    draw.ellipse([watch_center[0] - watch_radius - 8, watch_center[1] - watch_radius - 8,
-                  watch_center[0] + watch_radius + 8, watch_center[1] + watch_radius + 8],
-                 outline=(40, 45, 50, 255), width=16)
-    # Bezel
-    draw.ellipse([watch_center[0] - watch_radius, watch_center[1] - watch_radius,
-                  watch_center[0] + watch_radius, watch_center[1] + watch_radius],
-                 fill=(0, 0, 0, 255), outline=(0, 255, 102, 140), width=2)
-    # Crown
-    draw.rectangle([watch_center[0] + watch_radius + 6, watch_center[1] - 20,
-                    watch_center[0] + watch_radius + 18, watch_center[1] + 20],
-                   fill=(70, 75, 80, 255))
-    
-    # Inner watch rain
-    watch_crop = Image.new("RGBA", (watch_radius*2, watch_radius*2), (0, 0, 0, 0))
-    wdraw = ImageDraw.Draw(watch_crop)
-    wdraw.ellipse([0, 0, watch_radius*2, watch_radius*2], fill=(0, 0, 0, 255))
-    draw_matrix_rain_background(wdraw, watch_radius*2, watch_radius*2, font_size=14, density_step=16)
-    
-    # Watch time
-    wtime_font = get_font(36)
-    wdraw.text((watch_radius - 48, watch_radius - 20), "13:37", font=wtime_font, fill=(255, 255, 255, 255))
-    wcom_font = get_font(14)
-    wdraw.text((watch_radius - 28, watch_radius - 50), "⚡ 88%", font=wcom_font, fill=(0, 255, 102, 240))
-    wdraw.text((watch_radius - 38, watch_radius + 28), "❤️ 72 BPM", font=wcom_font, fill=(255, 80, 100, 240))
+    # Right side: Phone Mockup Visual
+    phone_w, phone_h = 190, 380
+    phone_x = 735
+    phone_y = 60
+    # Outer phone body
+    draw.rounded_rectangle([phone_x, phone_y, phone_x + phone_w, phone_y + phone_h], radius=28, fill=(15, 18, 20, 255), outline=(0, 255, 102, 160), width=3)
+    # Inner screen
+    screen_pad = 8
+    screen_w = phone_w - 2 * screen_pad
+    screen_h = phone_h - 2 * screen_pad
+    phone_screen = Image.new("RGBA", (screen_w, screen_h), (0, 0, 0, 255))
+    sdraw = ImageDraw.Draw(phone_screen)
+    draw_matrix_rain_background(sdraw, screen_w, screen_h, font_size=12, density_step=14)
+    # Clock on screen
+    w_font = get_font(28)
+    sdraw.text((screen_w // 2 - 36, 60), "13:37", font=w_font, fill=(255, 255, 255, 240))
+    # Paste screen
+    screen_mask = Image.new("L", (screen_w, screen_h), 0)
+    smask_draw = ImageDraw.Draw(screen_mask)
+    smask_draw.rounded_rectangle([0, 0, screen_w, screen_h], radius=20, fill=255)
+    img.paste(phone_screen, (phone_x + screen_pad, phone_y + screen_pad), screen_mask)
 
-    # Mask watch
-    mask = Image.new("L", (watch_radius*2, watch_radius*2), 0)
-    mdraw = ImageDraw.Draw(mask)
-    mdraw.ellipse([0, 0, watch_radius*2, watch_radius*2], fill=255)
-    img.paste(watch_crop, (watch_center[0] - watch_radius, watch_center[1] - watch_radius), mask)
+    # Punch hole camera
+    draw.ellipse([phone_x + phone_w // 2 - 4, phone_y + 14, phone_x + phone_w // 2 + 4, phone_y + 22], fill=(0, 0, 0, 255), outline=(40, 40, 40, 255), width=1)
 
     os.makedirs(os.path.dirname(output_path), exist_ok=True)
     img.save(output_path, "PNG")
-    print(f"✔ Generated Play Store Feature Graphic: {output_path} (1024x500)")
+    print(f"✔ Generated Feature Graphic: {output_path} (1024x500)")
 
 def generate_phone_screenshot(output_path, title, subtitle, theme="classic"):
     """1080x1920 High-Res Phone Screenshot."""
@@ -269,39 +259,6 @@ def generate_phone_screenshot(output_path, title, subtitle, theme="classic"):
     img.save(output_path, "PNG")
     print(f"✔ Generated Phone Screenshot: {output_path} (1080x1920)")
 
-def generate_wear_screenshot(output_path):
-    """384x384 Wear OS Watch Screenshot."""
-    size = (384, 384)
-    img = Image.new("RGBA", size, (0, 0, 0, 255))
-    draw = ImageDraw.Draw(img)
-
-    # Watch face circular matrix rain
-    draw_matrix_rain_background(draw, 384, 384, font_size=16, density_step=18)
-
-    # Bezel boundary circle
-    draw.ellipse([4, 4, 380, 380], outline=(0, 255, 102, 160), width=2)
-
-    # Time and complications
-    t_font = get_font(64)
-    d_font = get_font(20)
-    c_font = get_font(18)
-
-    draw.text((120, 140), "13:37", font=t_font, fill=(255, 255, 255, 255))
-    draw.text((130, 220), "FRI, OCT 9", font=d_font, fill=(0, 255, 102, 230))
-    draw.text((144, 75), "⚡ 88%", font=c_font, fill=(0, 255, 102, 240))
-    draw.text((134, 275), "❤️ 72 BPM", font=c_font, fill=(255, 70, 90, 240))
-
-    # Mask to perfect circle
-    mask = Image.new("L", size, 0)
-    mdraw = ImageDraw.Draw(mask)
-    mdraw.ellipse([0, 0, 384, 384], fill=255)
-    result = Image.new("RGBA", size, (0, 0, 0, 0))
-    result.paste(img, (0, 0), mask)
-
-    os.makedirs(os.path.dirname(output_path), exist_ok=True)
-    result.save(output_path, "PNG")
-    print(f"✔ Generated Wear OS Screenshot: {output_path} (384x384)")
-
 def generate_opengraph_preview(output_path):
     """1200x630 OpenGraph Preview Card for Social Media."""
     size = (1200, 630)
@@ -323,10 +280,10 @@ def generate_opengraph_preview(output_path):
     draw.text((140, 208), "MATRIX RAIN", font=title_font, fill=(255, 255, 255, 220))
 
     sub_font = get_font(30)
-    draw.text((140, 305), "The Ultimate Cyberpunk Live Wallpaper & Watch Face", font=sub_font, fill=(220, 240, 230, 240))
+    draw.text((140, 305), "The Ultimate Cyberpunk Live Wallpaper for Android", font=sub_font, fill=(220, 240, 230, 240))
 
     meta_font = get_font(22)
-    draw.text((140, 380), "Android Phones • Wear OS • Pixel Watch • 100% Free on F-Droid", font=meta_font, fill=(0, 229, 255, 240))
+    draw.text((140, 380), "Android Phones • AMOLED Optimized • 100% Free on F-Droid", font=meta_font, fill=(0, 229, 255, 240))
 
     # CTA Pill
     draw.rounded_rectangle([140, 435, 430, 485], radius=24, fill=(0, 255, 102, 255))
@@ -381,7 +338,7 @@ def generate_mipmap_icons(res_dir):
 def main():
     print("🎨 Generating Matrix Rain Visual Assets Suite...")
 
-    # Fastlane / Google Play Assets
+    # Fastlane Store Assets
     fastlane_base = "fastlane/metadata/android/en-US/images"
     generate_play_store_icon(f"{fastlane_base}/icon.png")
     generate_feature_graphic(f"{fastlane_base}/featureGraphic.png")
@@ -389,8 +346,6 @@ def main():
     generate_phone_screenshot(f"{fastlane_base}/phoneScreenshots/1_classic_matrix.png", "AUTHENTIC DIGITAL RAIN", "Engineered for 120Hz Displays", theme="classic")
     generate_phone_screenshot(f"{fastlane_base}/phoneScreenshots/2_touch_shockwave.png", "INTERACTIVE TOUCH RIPPLE", "Tap to Deflect Falling Glyphs", theme="cyan")
     generate_phone_screenshot(f"{fastlane_base}/phoneScreenshots/3_custom_palettes.png", "CRIMSON VIRUS & GOLD NEO", "Multi-Theme Cyberpunk Engine", theme="crimson")
-
-    generate_wear_screenshot(f"{fastlane_base}/wearScreenshots/1_pixel_watch_matrix.png")
 
     # Landing / Web Assets
     landing_assets = "landing/assets"

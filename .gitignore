@@ -2,6 +2,5 @@
 /.gradle/
 /build/
 /app/build/
-/wear/build/
 .DS_Store
 .vercel

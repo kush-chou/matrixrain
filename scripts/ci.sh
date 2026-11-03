@@ -6,13 +6,11 @@ PYTHON="${PYTHON:-/usr/bin/python3}"
 
 echo "==> [CI] Running Matrix Rain verification suite..."
 
-# 1. Verify Android manifests and Watch Face Format XML syntax
+# 1. Verify Android manifest XML syntax
 $PYTHON -c "
 import xml.etree.ElementTree as ET
 ET.parse('app/src/main/AndroidManifest.xml')
-ET.parse('wear/src/main/AndroidManifest.xml')
-ET.parse('wear/src/main/res/raw/watchface.xml')
-print('✔ Android & Wear OS XML manifests validated successfully.')
+print('✔ Android XML manifest validated successfully.')
 "
 
 # 2. Verify Landing page files

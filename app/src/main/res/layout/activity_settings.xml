@@ -17,59 +17,7 @@
             android:textColor="#00FF00"
             android:textSize="24sp"
             android:textStyle="bold"
-            android:layout_marginBottom="4dp"/>
-
-        <TextView
-            android:id="@+id/text_edition_badge"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="F-Droid FOSS Edition"
-            android:textColor="#00FFFF"
-            android:textSize="12sp"
-            android:background="#112233"
-            android:paddingStart="8dp"
-            android:paddingEnd="8dp"
-            android:paddingTop="3dp"
-            android:paddingBottom="3dp"
             android:layout_marginBottom="16dp"/>
-
-        <!-- Pro Upgrade Banner (Shown on Google Play free edition) -->
-        <LinearLayout
-            android:id="@+id/banner_pro_upgrade"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:background="#1A3311"
-            android:padding="12dp"
-            android:layout_marginBottom="18dp"
-            android:visibility="gone">
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="⚡ Unlock Matrix Pro"
-                android:textColor="#00FF66"
-                android:textSize="16sp"
-                android:textStyle="bold" />
-
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Get unlimited access to Red Virus streams, Gold Neo drops, custom text messages, and touch shockwave ripples."
-                android:textColor="#AACCBB"
-                android:textSize="13sp"
-                android:layout_marginTop="4dp" />
-
-            <Button
-                android:id="@+id/btn_unlock_pro"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Upgrade to Pro (Lifetime)"
-                android:backgroundTint="#00FF66"
-                android:textColor="#000000"
-                android:textStyle="bold"
-                android:layout_marginTop="8dp" />
-        </LinearLayout>
 
         <!-- Density -->
         <TextView
