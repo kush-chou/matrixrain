@@ -33,6 +33,7 @@ public class RainRenderer {
     private String currentThemeName;
 
     private final Object renderLock = new Object();
+    private final char[] glyphBuf = new char[1];
 
     public static Typeface getMatrixTypeface(Context context) {
         if (context == null) {
@@ -221,7 +222,8 @@ public class RainRenderer {
                         } else if (sim.getColumnType(i) == RainSimulation.TYPE_GOLD) {
                             p = goldPaint;
                         }
-                        bufferCanvas.drawText(String.valueOf(glitchChar), x, glitchY * fontSize, p);
+                        glyphBuf[0] = glitchChar;
+                        bufferCanvas.drawText(glyphBuf, 0, 1, x, glitchY * fontSize, p);
                     }
 
                     // Stepped columns: trailing glyph + glowing head
@@ -243,25 +245,26 @@ public class RainRenderer {
                                     bodyPaint = textPaint;
                                     break;
                             }
-                            bufferCanvas.drawText(String.valueOf(sim.getTrailChar(i)), x, lastY * fontSize, bodyPaint);
+                            glyphBuf[0] = sim.getTrailChar(i);
+                            bufferCanvas.drawText(glyphBuf, 0, 1, x, lastY * fontSize, bodyPaint);
                         }
 
                         int curY = sim.getDropY(i);
                         if (curY >= 0 && curY <= heightRows) {
                             char ch = sim.getPreviousChar(i);
-                            String str = String.valueOf(ch);
+                            glyphBuf[0] = ch;
                             int colType = sim.getColumnType(i);
 
                             if (colType == RainSimulation.TYPE_VIRUS) {
-                                bufferCanvas.drawText(str, x, curY * fontSize, virusPaint);
+                                bufferCanvas.drawText(glyphBuf, 0, 1, x, curY * fontSize, virusPaint);
                             } else if (colType == RainSimulation.TYPE_GOLD) {
-                                bufferCanvas.drawText(str, x, curY * fontSize, goldPaint);
+                                bufferCanvas.drawText(glyphBuf, 0, 1, x, curY * fontSize, goldPaint);
                             } else if (colType == RainSimulation.TYPE_BACKGROUND) {
-                                bufferCanvas.drawText(str, x, curY * fontSize, backgroundPaint);
+                                bufferCanvas.drawText(glyphBuf, 0, 1, x, curY * fontSize, backgroundPaint);
                             } else {
                                 // Dual-pass head: radiant bloom glow aura first, then crisp brilliant core
-                                bufferCanvas.drawText(str, x, curY * fontSize, headGlowPaint);
-                                bufferCanvas.drawText(str, x, curY * fontSize, headCorePaint);
+                                bufferCanvas.drawText(glyphBuf, 0, 1, x, curY * fontSize, headGlowPaint);
+                                bufferCanvas.drawText(glyphBuf, 0, 1, x, curY * fontSize, headCorePaint);
                             }
                         }
                     }
