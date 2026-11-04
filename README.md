@@ -8,19 +8,11 @@
 
 > The authentic, battery-optimized digital code rain live wallpaper for Android.
 
-![Matrix Rain Banner](fastlane/metadata/android/en-US/images/featureGraphic.png)
-
 ---
 
 ## Overview
 
 **Matrix Rain** brings the iconic digital glyph cascade to your Android home screen with zero battery compromise. Engineered specifically for high-refresh-rate AMOLED and OLED displays, it combines pixel-perfect movie authenticity with aggressive power-saving optimizations.
-
-<p align="center">
-  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/1_classic_matrix.png" width="31%" alt="Classic Matrix Rain" />
-  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/2_touch_shockwave.png" width="31%" alt="Touch Shockwaves" />
-  <img src="fastlane/metadata/android/en-US/images/phoneScreenshots/3_custom_palettes.png" width="31%" alt="Color Themes" />
-</p>
 
 ### Why Matrix Rain?
 
