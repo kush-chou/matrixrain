@@ -172,6 +172,13 @@ public class MatrixRainWallpaperService extends WallpaperService {
         public void onDestroy() {
             super.onDestroy();
             this.visible = false;
+            if (powerSaveReceiver != null) {
+                try {
+                    unregisterReceiver(powerSaveReceiver);
+                } catch (Exception ignored) {
+                }
+                powerSaveReceiver = null;
+            }
             if (sharedPreferences != null) {
                 sharedPreferences.unregisterOnSharedPreferenceChangeListener(this);
             }
@@ -222,7 +229,12 @@ public class MatrixRainWallpaperService extends WallpaperService {
             renderer.render(getSurfaceHolder(), simulation, prefs);
 
             if (visible) {
-                renderHandler.postDelayed(drawRunner, prefs.getDrawDelay());
+                long delay = prefs.getDrawDelay();
+                if (isPowerSaveMode) {
+                    // When battery saver is active, double delay / cap frame rate to ~20 FPS to conserve power
+                    delay = Math.max(50, delay * 2);
+                }
+                renderHandler.postDelayed(drawRunner, delay);
             }
         }
     }
