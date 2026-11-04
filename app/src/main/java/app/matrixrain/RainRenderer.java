@@ -5,6 +5,7 @@ import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.view.SurfaceHolder;
 import androidx.core.content.res.ResourcesCompat;
@@ -12,11 +13,16 @@ import androidx.core.content.res.ResourcesCompat;
 /**
  * SurfaceHolder-based bitmap double-buffer renderer for Matrix Rain.
  * Renders phosphor decay fade, glyph trailing, radiant dual-pass bloom heads, and glitches.
+ * Uses a half-resolution RGB_565 offscreen buffer bitmap scaled up via GPU blit to minimize CPU cost and memory bandwidth.
  */
 public class RainRenderer {
 
+    private static final float RENDER_SCALE = 0.5f;
+
     private Bitmap bufferBitmap;
     private Canvas bufferCanvas;
+    private final Rect dstRect = new Rect();
+    private final Paint blitPaint = new Paint(Paint.FILTER_BITMAP_FLAG);
 
     private Paint textPaint;
     private Paint backgroundPaint;
@@ -35,20 +41,28 @@ public class RainRenderer {
     private final Object renderLock = new Object();
     private final char[] glyphBuf = new char[1];
 
+    private static volatile Typeface cachedTypeface;
+
     public static Typeface getMatrixTypeface(Context context) {
+        if (cachedTypeface != null) {
+            return cachedTypeface;
+        }
         if (context == null) {
             return Typeface.MONOSPACE;
         }
+        Context appContext = context.getApplicationContext() != null ? context.getApplicationContext() : context;
         try {
-            Typeface tf = ResourcesCompat.getFont(context, R.font.share_tech_mono);
+            Typeface tf = ResourcesCompat.getFont(appContext, R.font.share_tech_mono);
             if (tf != null) {
+                cachedTypeface = tf;
                 return tf;
             }
         } catch (Exception ignored) {
         }
         try {
-            Typeface tf = Typeface.createFromAsset(context.getAssets(), "fonts/share_tech_mono.ttf");
+            Typeface tf = Typeface.createFromAsset(appContext.getAssets(), "fonts/share_tech_mono.ttf");
             if (tf != null) {
+                cachedTypeface = tf;
                 return tf;
             }
         } catch (Exception ignored) {
@@ -171,10 +185,18 @@ public class RainRenderer {
                 return;
             }
 
+            int bitmapWidth = Math.max(1, Math.round(width * RENDER_SCALE));
+            int bitmapHeight = Math.max(1, Math.round(height * RENDER_SCALE));
+
             Bitmap oldBitmap = bufferBitmap;
-            bufferBitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
+            bufferBitmap = Bitmap.createBitmap(bitmapWidth, bitmapHeight, Bitmap.Config.RGB_565);
             bufferCanvas = new Canvas(bufferBitmap);
+            float scaleX = bitmapWidth / (float) width;
+            float scaleY = bitmapHeight / (float) height;
+            bufferCanvas.scale(scaleX, scaleY);
             bufferCanvas.drawColor(Color.BLACK);
+
+            dstRect.set(0, 0, width, height);
 
             if (oldBitmap != null && !oldBitmap.isRecycled()) {
                 oldBitmap.recycle();
@@ -193,7 +215,11 @@ public class RainRenderer {
 
         Canvas canvas = null;
         try {
-            canvas = holder.lockCanvas();
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                canvas = holder.lockHardwareCanvas();
+            } else {
+                canvas = holder.lockCanvas();
+            }
             if (canvas == null) {
                 return;
             }
@@ -271,7 +297,7 @@ public class RainRenderer {
                 }
 
                 // Blit offscreen buffer to surface canvas
-                canvas.drawBitmap(bufferBitmap, 0, 0, null);
+                canvas.drawBitmap(bufferBitmap, null, dstRect, blitPaint);
             }
         } catch (Exception e) {
             e.printStackTrace();

@@ -11,4 +11,4 @@ KEY FEATURES:
 • Privacy First: 100% offline, zero trackers, zero analytics, zero ads.
 
 Free & Open Source:
-Available on F-Droid with all features unlocked. Check out the source code at https://github.com/kush-chou/matrixrain
+100% free and open source with all features unlocked. Check out the source code at https://github.com/kush-chou/matrixrain

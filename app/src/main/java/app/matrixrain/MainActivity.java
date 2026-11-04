@@ -1,5 +1,6 @@
 package app.matrixrain;
 
+import android.app.WallpaperInfo;
 import android.app.WallpaperManager;
 import android.content.ComponentName;
 import android.content.Intent;
@@ -8,6 +9,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -19,6 +21,7 @@ import androidx.core.view.WindowInsetsControllerCompat;
 public class MainActivity extends AppCompatActivity {
 
     private MatrixRainView matrixRainView;
+    private Button setWallpaperButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,10 +41,11 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         matrixRainView = findViewById(R.id.matrix_rain_view);
+        setWallpaperButton = findViewById(R.id.set_wallpaper_button);
 
         // Safe area insets for foreground content
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main_content_container), (view, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout());
             float density = getResources().getDisplayMetrics().density;
             int horizontalPadding = (int) (24 * density);
             int topPadding = systemBars.top + (int) (16 * density);
@@ -50,18 +54,41 @@ public class MainActivity extends AppCompatActivity {
             return insets;
         });
 
-        // Set Live Wallpaper
-        findViewById(R.id.set_wallpaper_button).setOnClickListener(v -> {
-            Intent intent = new Intent(WallpaperManager.ACTION_CHANGE_LIVE_WALLPAPER);
-            intent.putExtra(WallpaperManager.EXTRA_LIVE_WALLPAPER_COMPONENT,
-                    new ComponentName(MainActivity.this, MatrixRainWallpaperService.class));
-            startActivity(intent);
+        // Set Live Wallpaper button
+        setWallpaperButton.setOnClickListener(v -> {
+            if (isWallpaperActive()) {
+                startActivity(new Intent(MainActivity.this, SettingsActivity.class));
+            } else {
+                launchWallpaperPicker();
+            }
+        });
+
+        setWallpaperButton.setOnLongClickListener(v -> {
+            launchWallpaperPicker();
+            return true;
         });
 
         // Settings Activity
         findViewById(R.id.settings_button).setOnClickListener(v -> {
             startActivity(new Intent(MainActivity.this, SettingsActivity.class));
         });
+    }
+
+    private boolean isWallpaperActive() {
+        try {
+            WallpaperManager wm = WallpaperManager.getInstance(this);
+            WallpaperInfo info = wm.getWallpaperInfo();
+            return info != null && getPackageName().equals(info.getPackageName());
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private void launchWallpaperPicker() {
+        Intent intent = new Intent(WallpaperManager.ACTION_CHANGE_LIVE_WALLPAPER);
+        intent.putExtra(WallpaperManager.EXTRA_LIVE_WALLPAPER_COMPONENT,
+                new ComponentName(MainActivity.this, MatrixRainWallpaperService.class));
+        startActivity(intent);
     }
 
     @Override
@@ -72,6 +99,17 @@ public class MainActivity extends AppCompatActivity {
             matrixRainView.startAnimation();
         }
         updateHeaderTheme();
+        updateWallpaperButtonState();
+    }
+
+    private void updateWallpaperButtonState() {
+        if (setWallpaperButton != null) {
+            if (isWallpaperActive()) {
+                setWallpaperButton.setText("✓  Wallpaper Active");
+            } else {
+                setWallpaperButton.setText("⚡  Set Live Wallpaper");
+            }
+        }
     }
 
     private void updateHeaderTheme() {

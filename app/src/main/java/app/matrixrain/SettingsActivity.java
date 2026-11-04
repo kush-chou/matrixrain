@@ -60,7 +60,7 @@ public class SettingsActivity extends AppCompatActivity {
 
         // Apply safe status bar and navigation bar insets to content container
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.settings_content_container), (view, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars() | WindowInsetsCompat.Type.displayCutout());
             float density = getResources().getDisplayMetrics().density;
             int horizontalPadding = (int) (24 * density);
             int topPadding = systemBars.top + (int) (16 * density);
@@ -98,7 +98,7 @@ public class SettingsActivity extends AppCompatActivity {
         setupThemeSelector(prefs);
 
         btnApply.setOnClickListener(v -> {
-            saveSettings();
+            Toast.makeText(this, "Settings Saved", Toast.LENGTH_SHORT).show();
             finish();
         });
     }
@@ -192,6 +192,5 @@ public class SettingsActivity extends AppCompatActivity {
         editor.putBoolean(RainPreferences.KEY_TOUCH, switchTouch.isChecked());
 
         editor.apply();
-        Toast.makeText(this, "Settings Saved", Toast.LENGTH_SHORT).show();
     }
 }
