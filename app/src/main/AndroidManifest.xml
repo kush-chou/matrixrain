@@ -32,6 +32,7 @@
             </intent-filter>
         </activity>
 
+        <!-- Exported: launched by the system wallpaper picker (see xml/wallpaper.xml). Reads no Intent extras. -->
         <activity 
             android:name=".SettingsActivity"
             android:label="Matrix Rain Settings"
