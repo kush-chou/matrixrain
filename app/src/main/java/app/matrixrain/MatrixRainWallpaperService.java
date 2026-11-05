@@ -108,10 +108,13 @@ public class MatrixRainWallpaperService extends WallpaperService {
             renderHandler.post(new Runnable() {
                 @Override
                 public void run() {
-                    boolean fontChanged = prefs.load(sp);
+                    boolean fontChanged = prefs.load(sp != null ? sp : sharedPreferences);
                     renderer.applyTheme(prefs);
-                    if (fontChanged && width > 0 && height > 0) {
+                    if ((fontChanged || getScaledFontSize() != renderer.getFontSize()) && width > 0 && height > 0) {
                         resizeMatrix();
+                    } else if (visible) {
+                        renderHandler.removeCallbacks(drawRunner);
+                        renderHandler.post(drawRunner);
                     }
                 }
             });
@@ -123,11 +126,15 @@ public class MatrixRainWallpaperService extends WallpaperService {
             renderHandler.post(new Runnable() {
                 @Override
                 public void run() {
+                    renderHandler.removeCallbacks(drawRunner);
                     if (visible) {
-                        renderHandler.removeCallbacks(drawRunner);
-                        renderHandler.post(drawRunner);
-                    } else {
-                        renderHandler.removeCallbacks(drawRunner);
+                        prefs.load(sharedPreferences);
+                        renderer.applyTheme(prefs);
+                        if (getScaledFontSize() != renderer.getFontSize() && width > 0 && height > 0) {
+                            resizeMatrix();
+                        } else {
+                            renderHandler.post(drawRunner);
+                        }
                     }
                 }
             });

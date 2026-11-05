@@ -74,7 +74,7 @@ public class RainPreferences {
 
     public static int calculateDrawDelay(int speedProgress) {
         int clamped = Math.max(0, Math.min(100, speedProgress));
-        return 36 - (clamped * 20) / 100; // 36ms (~28fps) at 0%, 22ms (~45fps) at 70%, 16ms (~60fps) at 100%
+        return 75 - (clamped * 60) / 100; // 75ms at 0%, 33ms at 70%, 15ms at 100%
     }
 
     public static int calculateFontSize(int glyphSizeProgress) {
@@ -82,7 +82,7 @@ public class RainPreferences {
         return 28 + (clamped * 28) / 100; // 28 at 0% (~39px), 42 at 50% (~59px), 56 at 100% (~78px)
     }
 
-    private int drawDelay = calculateDrawDelay(DEFAULT_SPEED_PROGRESS); // Default: 22ms (70%)
+    private int drawDelay = calculateDrawDelay(DEFAULT_SPEED_PROGRESS); // Default: 33ms (70%)
     private int fontSize = calculateFontSize(DEFAULT_DENSITY_PROGRESS); // Default: 42
     private String currentTheme = DEFAULT_THEME;
     private boolean themeChanged = false;

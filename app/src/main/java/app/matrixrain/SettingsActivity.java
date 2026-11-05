@@ -94,10 +94,62 @@ public class SettingsActivity extends AppCompatActivity {
         switchGlitch.setChecked(prefs.getBoolean(RainPreferences.KEY_GLITCH, true));
         switchTouch.setChecked(prefs.getBoolean(RainPreferences.KEY_TOUCH, true));
 
+        // Live change listeners for SeekBars to persist while dragging
+        seekDensity.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if (fromUser) {
+                    prefs.edit().putInt(RainPreferences.KEY_DENSITY, progress).apply();
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                prefs.edit().putInt(RainPreferences.KEY_DENSITY, seekBar.getProgress()).apply();
+            }
+        });
+
+        seekSpeed.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if (fromUser) {
+                    prefs.edit().putInt(RainPreferences.KEY_SPEED, progress).apply();
+                }
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                prefs.edit().putInt(RainPreferences.KEY_SPEED, seekBar.getProgress()).apply();
+            }
+        });
+
+        // Live change listeners for switches to persist immediately
+        switchVirus.setOnCheckedChangeListener((buttonView, isChecked) ->
+                prefs.edit().putBoolean(RainPreferences.KEY_VIRUS, isChecked).apply());
+        switchGold.setOnCheckedChangeListener((buttonView, isChecked) ->
+                prefs.edit().putBoolean(RainPreferences.KEY_GOLD, isChecked).apply());
+        switchMessages.setOnCheckedChangeListener((buttonView, isChecked) ->
+                prefs.edit().putBoolean(RainPreferences.KEY_MESSAGES, isChecked).apply());
+        switchDepth.setOnCheckedChangeListener((buttonView, isChecked) ->
+                prefs.edit().putBoolean(RainPreferences.KEY_DEPTH, isChecked).apply());
+        switchGlitch.setOnCheckedChangeListener((buttonView, isChecked) ->
+                prefs.edit().putBoolean(RainPreferences.KEY_GLITCH, isChecked).apply());
+        switchTouch.setOnCheckedChangeListener((buttonView, isChecked) ->
+                prefs.edit().putBoolean(RainPreferences.KEY_TOUCH, isChecked).apply());
+
         // Setup 6-color theme dots selector
         setupThemeSelector(prefs);
 
         btnApply.setOnClickListener(v -> {
+            saveSettings();
             Toast.makeText(this, "Settings Saved", Toast.LENGTH_SHORT).show();
             finish();
         });

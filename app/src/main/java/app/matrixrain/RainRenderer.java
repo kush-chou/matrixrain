@@ -189,7 +189,7 @@ public class RainRenderer {
             int bitmapHeight = Math.max(1, Math.round(height * RENDER_SCALE));
 
             Bitmap oldBitmap = bufferBitmap;
-            bufferBitmap = Bitmap.createBitmap(bitmapWidth, bitmapHeight, Bitmap.Config.RGB_565);
+            bufferBitmap = Bitmap.createBitmap(bitmapWidth, bitmapHeight, Bitmap.Config.ARGB_8888);
             bufferCanvas = new Canvas(bufferBitmap);
             float scaleX = bitmapWidth / (float) width;
             float scaleY = bitmapHeight / (float) height;
