@@ -35,7 +35,10 @@ android {
             versionNameSuffix "-debug"
         }
         release {
-            signingConfig signingConfigs.release
+            def keystorePath = System.getenv("ANDROID_KEYSTORE_PATH") ?: project.findProperty("KEYSTORE_PATH") ?: "../release.keystore"
+            if (file(keystorePath).exists()) {
+                signingConfig signingConfigs.release
+            }
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
