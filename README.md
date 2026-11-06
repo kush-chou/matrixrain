@@ -6,6 +6,10 @@
 [![Trackers: 0](https://img.shields.io/badge/Trackers-0%20(100%25%20Offline)-00ff66.svg?style=flat-square&logo=shield&logoColor=black)](web/privacy.html)
 [![Web Demo: matrixrain.app](https://img.shields.io/badge/Web%20Demo-matrixrain.app-00ff66.svg?style=flat-square&logo=googlechrome&logoColor=black)](https://matrixrain.app/)
 
+<p align="center">
+  <img src="docs/images/banner.png" alt="Matrix Rain on Foldable Display" width="100%" />
+</p>
+
 > The authentic, battery-optimized digital code rain live wallpaper for Android.
 
 ---
@@ -20,7 +24,8 @@
 - ⚡ **0% Standby Battery Drain**: Rendering pauses immediately when your screen turns off or another application covers the wallpaper. Zero background CPU wake locks.
 - 🚀 **Adaptive High-Refresh (60Hz / 90Hz / 120Hz)**: Seamless fluid motion synchronized with your device's native display refresh rate.
 - 🌊 **Interactive Touch Shockwaves**: Tap or drag across the screen to scatter and deflect falling glyphs in real-time.
-- 🎨 **Dynamic Palettes & Special Drops**: Choose between Classic Terminal Green, Crimson Virus, Gold Neo, and Cyan Cyberpunk, complete with rare glowing lead glyphs and custom message drops.
+- 🎨 **6 Cyberpunk Themes & Special Drops**: Choose between Classic Terminal Green, Neon Cyan, Crimson Virus, Amber Gold, Cyber Violet, and Monochrome Silver, complete with rare glowing Red Virus drops, Gold Neo drops, and falling hidden message streams.
+- 🔋 **Intelligent Battery Saver Auto-Throttling**: Automatically caps frame pacing under Android Power Saver to maximize endurance without killing the live wallpaper.
 - 🛡️ **100% Offline & Private**: Zero network permissions requested. No telemetry, no third-party SDKs, no trackers, and no advertisements.
 
 ---
@@ -31,11 +36,11 @@
 - **Hardware Acceleration**: Canvas rendering optimized to minimize draw calls and memory allocations during frame loops.
 - **Interactive Touch Physics**: Touch input generates radial deflection shockwaves across active glyph columns.
 - **Deep Customization Engine**:
-  - Rain speed and column density
-  - Glyph font size and stream length
-  - Character glitch frequency
-  - Color themes (Classic Green, Crimson Virus, Gold Neo, Cyan Cyberpunk)
-  - Custom falling words and Easter eggs
+  - Live-sync rain speed (from calm trickle to blazing cascade) and glyph size
+  - Column density and stream length
+  - Character glitch frequency and depth layers
+  - 6 Cyberpunk color themes (Classic Green, Neon Cyan, Crimson Virus, Amber Gold, Cyber Violet, Monochrome Silver)
+  - Custom falling words ("MATRIX", "SYSTEM", "WAKE UP", "NEO") and Easter eggs
 - **Live Wallpaper Preview**: Dedicated in-app configuration screen to fine-tune settings before applying.
 
 ---

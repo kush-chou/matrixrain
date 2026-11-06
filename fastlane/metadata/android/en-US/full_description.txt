@@ -1,14 +1,16 @@
 Wake up, Neo. Bring the iconic Matrix digital code rain to your Android device with zero battery compromise.
 
-Matrix Rain is an ultra-optimized Live Wallpaper engineered specifically for AMOLED/OLED displays and high-refresh screens (60Hz, 90Hz, 120Hz).
+Matrix Rain is an ultra-optimized Live Wallpaper engineered specifically for AMOLED and OLED displays, folding screens, and high-refresh panels (60Hz, 90Hz, 120Hz).
 
 KEY FEATURES:
-• 0% Standby Battery Drain: Halts rendering completely when your screen is turned off or when an application is open in the foreground.
-• True OLED Black: Pure #000000 background keeps individual pixels turned off, saving battery while delivering infinite contrast.
-• Extreme Customization: Tweak rain speed, density, stream length, glitch frequency, and character sizes.
-• Interactive Touch Ripples: Tap and drag across your screen to send digital shockwaves through the code waterfall.
-• Special Drops: Rare Red Virus streams, Gold Neo drops, and falling custom messages.
-• Privacy First: 100% offline, zero trackers, zero analytics, zero ads.
+• 6 Cyberpunk Color Themes: Choose between Classic Terminal Green, Neon Cyan, Crimson Virus, Amber Gold, Cyber Violet, and Monochrome Silver.
+• True OLED Black (#000000): Pure black background keeps individual pixels turned off on AMOLED/OLED screens, saving battery while delivering infinite contrast.
+• 0% Standby Battery Drain: Halts rendering completely when your screen is turned off or when an application is open in the foreground. Zero background CPU wake locks.
+• Intelligent Battery Saver Mode: Automatically throttles frame pacing when Android Power Saver is active to maximize battery life while maintaining fluid motion.
+• Special Drops & Cryptic Messages: Experience rare glowing Red Virus drops, Gold Neo streams, background depth layers, and falling hidden messages ("MATRIX", "SYSTEM", "WAKE UP", "NEO").
+• Interactive Touch Shockwaves: Tap and drag across your screen to deflect and scatter falling glyphs with real-time radial shockwaves.
+• Live-Sync Customization: Fine-tune glyph font size, cascade speed (from calm hypnotic trickle to high-velocity stream), character glitch frequency, and drop toggles with live preview sync.
+• Privacy First: 100% offline. Zero network permissions requested, zero trackers, zero analytics, and zero ads.
 
 Free & Open Source:
 100% free and open source with all features unlocked. Check out the source code at https://github.com/kush-chou/matrixrain
