@@ -1,8 +1,10 @@
 package app.matrixrain;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
 import android.graphics.drawable.GradientDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.View;
@@ -153,6 +155,17 @@ public class SettingsActivity extends AppCompatActivity {
             Toast.makeText(this, "Settings Saved", Toast.LENGTH_SHORT).show();
             finish();
         });
+
+        View footerCredits = findViewById(R.id.footer_credits);
+        if (footerCredits != null) {
+            footerCredits.setOnClickListener(v -> {
+                try {
+                    Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse("https://github.com/kush-chou/matrixrain"));
+                    startActivity(intent);
+                } catch (Exception ignored) {
+                }
+            });
+        }
     }
 
     private void setupThemeSelector(SharedPreferences prefs) {

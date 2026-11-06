@@ -365,5 +365,27 @@
             android:layout_marginTop="24dp"
             android:layout_marginBottom="24dp" />
 
+        <LinearLayout
+            android:id="@+id/footer_credits"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:clickable="true"
+            android:focusable="true"
+            android:padding="12dp"
+            android:layout_marginBottom="16dp">
+
+            <TextView
+                android:id="@+id/text_footer_credits"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="// SUBSTRATA LABS • v1.0.1"
+                android:textColor="#80FFFFFF"
+                android:textSize="12sp"
+                android:fontFamily="@font/share_tech_mono" />
+        </LinearLayout>
+
     </LinearLayout>
 </ScrollView>
