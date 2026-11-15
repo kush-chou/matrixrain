@@ -2,32 +2,27 @@ Categories:
   - Theming
 License: MIT
 AuthorName: Kushagra Choudhary
+WebSite: https://matrixrain.app/
 SourceCode: https://github.com/kush-chou/matrixrain
 IssueTracker: https://github.com/kush-chou/matrixrain/issues
-WebSite: https://matrixrain.app/
 
 AutoName: Matrix Rain
-Summary: Ultra-efficient, customizable Matrix digital code rain live wallpaper
 
 RepoType: git
 Repo: https://github.com/kush-chou/matrixrain.git
+Binaries: https://github.com/kush-chou/matrixrain/releases/download/v%v/app-release.apk
 
 Builds:
-  - versionName: '1.0'
-    versionCode: 1
-    commit: 'v1.0.0'
+  - versionName: 1.0.2
+    versionCode: 3
+    commit: 2c3983866103bdaaf792e7e2cd97e155d228613a
     subdir: app
     gradle:
-      - assembleRelease
+      - yes
 
-  - versionName: '1.0.1'
-    versionCode: 2
-    commit: 'v1.0.1'
-    subdir: app
-    gradle:
-      - assembleRelease
+AllowedAPKSigningKeys: 729fd7d1a3157d4f92c8c0413d2c69a7e06b6175b36cdb13e2981cd90fd5deba
 
 AutoUpdateMode: Version
 UpdateCheckMode: Tags
-CurrentVersion: '1.0.1'
-CurrentVersionCode: 2
+CurrentVersion: 1.0.2
+CurrentVersionCode: 3
